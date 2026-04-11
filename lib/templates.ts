@@ -61,64 +61,42 @@ export function generateCitySEOTemplate(city: string, colleges: any[], courseNam
   const nextYear = year + 1;
 
   const intro = `
-    <p>Looking for the <strong>best ${target} in ${cityName}</strong>? You've come to the right place. ${cityName} has emerged as a major educational hub in India, attracting students from all across the country. With its mix of historic institutions and modern universities, the city offers unparalleled opportunities for academic growth and career development.</p>
-    <p>In this comprehensive guide, we'll explore the top-ranked ${target} in ${cityName}, their admission processes for the ${year}-${nextYear} academic session, fee structures, and how you can secure a seat through <strong>direct admission or management quota</strong>.</p>
+    <p>${cityName} has emerged as a premier educational hub in India, offering a wide range of opportunities for students seeking quality higher education. If you are looking for the <strong>best ${target} in ${cityName}</strong>, you have arrived at the definitive guide. The city's educational landscape is a vibrant mix of historic institutions and modern research-driven universities, making it a top choice for aspirants from across the country.</p>
+    <p>Choosing the right institution is critical for your career trajectory. In ${cityName}, students benefit from a unique ecosystem that blends academic rigor with industry exposure. Whether you are interested in engineering, management, or medical sciences, the ${target} in this region are known for their state-of-the-art infrastructure and excellent placement records. In this comprehensive guide, we'll explore the admission processes for the ${year}-${nextYear} academic session, fee structures, and how you can secure a seat through <strong>direct admission or management quota</strong>.</p>
+    <p>The competition for seats in top-tier colleges is intense. Understanding the nuances of the application process, entrance exam requirements, and eligibility criteria is essential. Our experts have curated this list based on latest rankings, student feedback, and placement statistics to help you make an informed decision about your future in ${cityName}.</p>
   `;
 
-  const admissionProcess = `
-    <h2 class="text-3xl font-bold text-navy-800 mb-6">Admission Process & Eligibility ${year}</h2>
-    <p>Admission to premier ${target} in ${cityName} typically follows a structured process. While merit-based admission through entrance exams is the primary route, many institutions also offer <strong>management quota seats</strong> for direct enrollment.</p>
-    <h3 class="text-xl font-bold text-navy-700 mt-6 mb-4">General Eligibility Criteria:</h3>
-    <ul class="space-y-3 mb-6">
-      <li class="flex items-start gap-3">
-        <span class="w-1.5 h-1.5 rounded-full bg-orange-500 mt-2 flex-shrink-0"></span>
-        <span>Successful completion of 10+2 or equivalent from a recognized board.</span>
-      </li>
-      <li class="flex items-start gap-3">
-        <span class="w-1.5 h-1.5 rounded-full bg-orange-500 mt-2 flex-shrink-0"></span>
-        <span>Minimum aggregate marks (usually 50% for general, 45% for reserved categories).</span>
-      </li>
-      <li class="flex items-start gap-3">
-        <span class="w-1.5 h-1.5 rounded-full bg-orange-500 mt-2 flex-shrink-0"></span>
-        <span>Valid scores in relevant entrance exams like NEET, JEE Main, KCET, COMEDK, or PGCET.</span>
-      </li>
-    </ul>
-    <p>For students who might have missed the entrance exam cutoffs, <strong>direct admission in ${cityName}</strong> provides a valuable alternative to secure their future in a top-tier institution.</p>
+  const admissionProcess = [
+    { step: '1', process: 'Entrance Exam (CAT/MAT/CET/JEE)' },
+    { step: '2', process: 'Online Application & Registration' },
+    { step: '3', process: 'Counselling & Document Verification' },
+    { step: '4', process: 'College Selection & Seat Allotment' },
+    { step: '5', process: 'Fee Payment & Final Admission' },
+  ];
+
+  const eligibility = [
+    { requirement: 'Minimum Qualification', details: courseName?.includes('MBA') || courseName?.includes('Postgraduate') ? 'Graduation (Any Stream)' : '10+2 (Higher Secondary)' },
+    { requirement: 'Minimum Marks', details: '50% Aggregate (45% for Reserved Categories)' },
+    { requirement: 'Entrance Exams', details: courseName || 'National/State Level Exams' },
+    { requirement: 'Age Limit', details: 'As per University/Council Norms' },
+  ];
+
+  const courseOverview = [
+    { parameter: 'Course Name', details: courseName || 'Professional Degree' },
+    { parameter: 'Duration', details: courseName?.includes('MBA') ? '2 Years' : '3-4 Years' },
+    { parameter: 'Course Level', details: courseName?.includes('MBA') ? 'Postgraduate' : 'Undergraduate' },
+    { parameter: 'Average Fees', details: '₹2.5L – ₹15L (Total)' },
+    { parameter: 'Average Salary', details: '₹4.5L – ₹22L LPA' },
+  ];
+
+  const placementInsights = `
+    <p>${cityName} is widely recognized as one of the strongest placement hubs in India. The city's proximity to major IT parks, industrial zones, and corporate headquarters ensures that students in ${target} have unparalleled access to internships and career opportunities. Major recruiters including Fortune 500 companies regularly visit campuses in ${cityName} for their annual hiring drives.</p>
+    <p>The placement ecosystem here is driven by a strong synergy between academia and industry. Most top colleges have dedicated training and placement cells that work year-round to enhance students' employability through soft skills workshops, mock interviews, and industry-specific training. The average salary packages in ${cityName} for ${courseName || 'professional courses'} have seen a steady upward trend, reflecting the high demand for skilled professionals in the region.</p>
   `;
 
-  const whyStudy = `
-    <h2 class="text-3xl font-bold text-navy-800 mb-6">Why Study in ${cityName}?</h2>
-    <p>${cityName} offers a unique blend of academic rigor and vibrant campus life. Here are the top reasons why students choose ${cityName} for their higher education:</p>
-    <div class="grid md:grid-cols-2 gap-8 my-10">
-      <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
-        <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 mb-4">
-          <Sparkles class="w-5 h-5" />
-        </div>
-        <h4 class="font-bold text-navy-800 mb-2">Industry Hub</h4>
-        <p class="text-gray-600 text-sm">Proximity to major corporate offices and industrial zones provides excellent internship and placement opportunities.</p>
-      </div>
-      <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
-        <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 mb-4">
-          <Building2 class="w-5 h-5" />
-        </div>
-        <h4 class="font-bold text-navy-800 mb-2">Research Excellence</h4>
-        <p class="text-gray-600 text-sm">Many colleges in ${cityName} are known for their research facilities and collaborations with international universities.</p>
-      </div>
-      <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
-        <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600 mb-4">
-          <MapPin class="w-5 h-5" />
-        </div>
-        <h4 class="font-bold text-navy-800 mb-2">Cultural Diversity</h4>
-        <p class="text-gray-600 text-sm">The cosmopolitan nature of the city ensures a diverse student population and a rich multicultural experience.</p>
-      </div>
-      <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
-        <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 mb-4">
-          <Info class="w-5 h-5" />
-        </div>
-        <h4 class="font-bold text-navy-800 mb-2">Networking</h4>
-        <p class="text-gray-600 text-sm">Studying in a major hub allows you to build a strong professional network that will last a lifetime.</p>
-      </div>
-    </div>
+  const careerScope = `
+    <p>Graduating from a top college in ${cityName} opens up a plethora of career paths across various sectors. For ${courseName || 'professional'} graduates, the scope extends from core technical roles to strategic management positions. The diverse economy of ${cityName} ensures that there are opportunities in Information Technology, Manufacturing, Healthcare, Finance, and the booming Startup ecosystem.</p>
+    <p>Common job roles for graduates include Project Manager, Systems Architect, Business Analyst, Data Scientist, and Consultant. Furthermore, the entrepreneurial spirit of the city encourages many students to start their own ventures, supported by robust incubation centers within many colleges. The global recognition of degrees from ${cityName}'s premier institutions also facilitates opportunities for higher studies and careers abroad.</p>
   `;
 
   const faqs = [
@@ -141,13 +119,26 @@ export function generateCitySEOTemplate(city: string, colleges: any[], courseNam
     {
       q: `What entrance exams are required for ${cityName} college admission?`,
       a: `Common exams include ${courseName?.includes('Medical') ? 'NEET' : 'JEE Main/CET'} for undergraduate courses, and PGCET/GATE/CAT for postgraduate programs.`
+    },
+    {
+      q: `Is ${cityName} safe for outstation students?`,
+      a: `Absolutely. ${cityName} is known for its welcoming culture and safe environment, making it a preferred destination for students from all over India.`
     }
   ];
 
   return {
     intro,
     admissionProcess,
-    whyStudy,
-    faqs
+    eligibility,
+    courseOverview,
+    placementInsights,
+    careerScope,
+    faqs,
+    whyStudy: [
+      { title: 'Industry Exposure', desc: 'Direct interaction with top corporate leaders and regular industrial visits.', icon: 'Sparkles' },
+      { title: 'Campus Infrastructure', desc: 'Modern laboratories, digital libraries, and smart classrooms.', icon: 'Building2' },
+      { title: 'Placement Ecosystem', desc: 'Consistent track record of 90%+ placements with global MNCs.', icon: 'TrendingUp' },
+      { title: 'Startup Hub', desc: 'Access to one of the world\'s most vibrant startup and innovation ecosystems.', icon: 'Info' },
+    ]
   };
 }

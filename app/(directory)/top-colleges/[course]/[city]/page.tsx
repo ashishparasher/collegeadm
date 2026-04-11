@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
 import { ListingCard } from '@/components/directory/ListingCard';
-import { Award, ChevronRight, MapPin, GraduationCap, Building2, HelpCircle, Phone, MessageSquare, Sparkles } from 'lucide-react';
+import { Award, ChevronRight, MapPin, GraduationCap, Building2, HelpCircle, Phone, MessageSquare, Sparkles, TrendingUp, CheckCircle2, Info } from 'lucide-react';
 import { generateCitySEOTemplate } from '@/lib/templates';
 import { LeadForm } from '@/components/ui/LeadForm';
 import { FAQAccordion } from '@/components/ui/FAQAccordion';
@@ -114,7 +114,7 @@ export default async function TopCollegesPage({ params }: Props) {
     collegeType: 'Partner'
   }));
 
-  const { intro, admissionProcess, whyStudy, faqs } = generateCitySEOTemplate(cityParam, listings, course.name);
+  const { intro, admissionProcess, eligibility, courseOverview, placementInsights, careerScope, faqs, whyStudy } = generateCitySEOTemplate(cityParam, listings, course.name);
 
   // Schema Structured Data
   const jsonLd = {
@@ -126,7 +126,7 @@ export default async function TopCollegesPage({ params }: Props) {
           { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://collegeadm.org' },
           { '@type': 'ListItem', position: 2, name: 'Courses', item: 'https://collegeadm.org/courses' },
           { '@type': 'ListItem', position: 3, name: course.name, item: `https://collegeadm.org/courses/${params.course}` },
-          { '@type': 'ListItem', position: 4, name: `${course.name} in ${cityName}` }
+          { '@type': 'ListItem', position: 4, name: `${course.name} in ${cityName}`, item: `https://collegeadm.org/top-colleges/${params.course}/${cityParam}` }
         ]
       },
       {
@@ -142,16 +142,23 @@ export default async function TopCollegesPage({ params }: Props) {
 
   const featuredCollegeImage = listings[0]?.featuredImage || '/images/blog-placeholder.jpg';
 
+  const iconMap: any = {
+    Sparkles: <Sparkles className="w-6 h-6" />,
+    Building2: <Building2 className="w-6 h-6" />,
+    TrendingUp: <TrendingUp className="w-6 h-6" />,
+    Info: <Info className="w-6 h-6" />,
+  };
+
   return (
-    <div className="min-h-screen bg-white pt-20">
+    <div className="min-h-screen bg-[#f8fafc] pt-20">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       
       {/* Hero Section */}
-      <section className="relative py-24 overflow-hidden">
-        <div className="absolute inset-0 bg-navy z-0">
+      <section className="relative py-24 overflow-hidden bg-navy text-white">
+        <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 gradient-hero opacity-90" />
           <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
         </div>
@@ -159,12 +166,12 @@ export default async function TopCollegesPage({ params }: Props) {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <nav className="flex items-center gap-1.5 text-xs text-navy-200 mb-8">
-                <Link href="/" className="hover:text-white transition-colors">Home</Link>
+              <nav className="flex items-center gap-1.5 text-xs text-navy-200 mb-8 font-bold uppercase tracking-wider">
+                <Link href="/" className="hover:text-orange-400 transition-colors">Home</Link>
                 <ChevronRight className="w-3 h-3" />
-                <Link href="/courses" className="hover:text-white transition-colors">Courses</Link>
+                <Link href="/courses" className="hover:text-orange-400 transition-colors">Courses</Link>
                 <ChevronRight className="w-3 h-3" />
-                <span className="text-white/70">{course.name} in {cityName}</span>
+                <span className="text-orange-400 font-bold">{course.name} in {cityName}</span>
               </nav>
               
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 mb-6">
@@ -175,7 +182,7 @@ export default async function TopCollegesPage({ params }: Props) {
                 <span className="text-white text-[11px] font-bold uppercase tracking-wider">Top Rankings {year}</span>
               </div>
               
-              <h1 className="font-comfortaa font-bold text-4xl lg:text-6xl text-white mb-6 leading-tight">
+              <h1 className="font-comfortaa font-bold text-4xl lg:text-6xl mb-6 leading-tight">
                 Top {course.name} Colleges in <span className="text-orange-400 underline underline-offset-8 decoration-white/20">{cityName}</span>
               </h1>
               <p className="text-navy-100/80 text-lg lg:text-xl leading-relaxed mb-10 max-w-xl font-medium">
@@ -183,7 +190,7 @@ export default async function TopCollegesPage({ params }: Props) {
               </p>
               
               <div className="flex flex-wrap gap-4">
-                <a href="#listings" className="px-8 py-4 bg-orange-500 text-white font-bold rounded-2xl shadow-xl shadow-orange-500/30 hover:bg-orange-600 transition-all hover:scale-105">
+                <a href="#listings" className="px-8 py-4 bg-orange-600 text-white font-bold rounded-2xl shadow-xl shadow-orange-600/30 hover:bg-orange-500 transition-all hover:scale-105">
                   View Ranking List
                 </a>
                 <a href="#contact" className="px-8 py-4 bg-white/10 text-white font-bold rounded-2xl border border-white/20 backdrop-blur-md hover:bg-white/20 transition-all">
@@ -208,42 +215,100 @@ export default async function TopCollegesPage({ params }: Props) {
         </div>
       </section>
 
-      {/* Intro Section */}
-      <section className="py-24 bg-white">
+      {/* Intro & Info Tables */}
+      <section className="py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-3 gap-16">
-            <div className="lg:col-span-2 prose prose-lg prose-navy max-w-none">
-              <div className="text-gray-600 leading-[1.8]" dangerouslySetInnerHTML={{ __html: intro }} />
-              
-              <div className="my-16 bg-gray-50 rounded-[2.5rem] p-10 border border-gray-100 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-navy-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                <div dangerouslySetInnerHTML={{ __html: admissionProcess }} />
+            <div className="lg:col-span-2 space-y-16">
+              {/* Introduction */}
+              <div className="bg-white rounded-[2.5rem] p-10 border border-slate-200 shadow-sm">
+                <h2 className="text-3xl font-bold text-navy-800 mb-6 font-comfortaa">{course.name} Admission in {cityName}</h2>
+                <div className="text-slate-600 leading-[1.8] space-y-4" dangerouslySetInnerHTML={{ __html: intro }} />
+              </div>
+
+              {/* Admission Process Table */}
+              <div>
+                <h2 className="text-3xl font-bold text-navy-800 mb-8 font-comfortaa flex items-center gap-3">
+                  <CheckCircle2 className="w-8 h-8 text-orange-500" /> {course.name} Admission Steps 2026
+                </h2>
+                <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+                  <table className="w-full text-left border-collapse">
+                    <thead className="bg-slate-50">
+                      <tr>
+                        <th className="px-6 py-4 font-bold text-navy-800 text-sm border-b">Step</th>
+                        <th className="px-6 py-4 font-bold text-navy-800 text-sm border-b">Process Details</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {admissionProcess.map((row) => (
+                        <tr key={row.step} className="hover:bg-slate-50/50 transition-colors">
+                          <td className="px-6 py-4 font-bold text-orange-600 text-sm">{row.step}</td>
+                          <td className="px-6 py-4 text-slate-600 text-sm">{row.process}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Eligibility & Course Overview Grid */}
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h3 className="text-2xl font-bold text-navy-800 mb-6 font-comfortaa">{course.name} Eligibility</h3>
+                  <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+                    <table className="w-full text-left border-collapse">
+                      <tbody className="divide-y divide-slate-100">
+                        {eligibility.map((row) => (
+                          <tr key={row.requirement}>
+                            <td className="px-6 py-4 font-bold text-navy-700 text-[13px] bg-slate-50 w-1/2">{row.requirement}</td>
+                            <td className="px-6 py-4 text-slate-600 text-[13px]">{row.details}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-navy-800 mb-6 font-comfortaa">{course.name} Overview</h3>
+                  <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+                    <table className="w-full text-left border-collapse">
+                      <tbody className="divide-y divide-slate-100">
+                        {courseOverview.map((row) => (
+                          <tr key={row.parameter}>
+                            <td className="px-6 py-4 font-bold text-navy-700 text-[13px] bg-slate-50 w-1/2">{row.parameter}</td>
+                            <td className="px-6 py-4 text-slate-600 text-[13px]">{row.details}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
             </div>
             
             <div className="lg:col-span-1">
               <div className="sticky top-32 space-y-8">
-                <div className="bg-navy rounded-[2.5rem] p-8 text-white shadow-2xl shadow-navy-900/20 overflow-hidden relative">
+                <div className="bg-navy rounded-[2.5rem] p-8 text-white shadow-2xl shadow-navy-900/20 overflow-hidden relative border border-white/10">
                   <div className="absolute top-0 right-0 p-4 opacity-10">
                     <MessageSquare className="w-20 h-20" />
                   </div>
-                  <h3 className="font-comfortaa font-bold text-2xl mb-6 relative z-10">Instant Admission Query</h3>
+                  <h3 className="font-comfortaa font-bold text-2xl mb-6 relative z-10 text-orange-400">Get Admission Help</h3>
                   <LeadForm />
                 </div>
                 
-                <div className="bg-orange-50 rounded-[2.5rem] p-8 border border-orange-100">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center text-white">
-                      <Phone className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-orange-600 uppercase tracking-widest">Call Expert</p>
-                      <p className="font-bold text-navy-800">+91 77070 55155</p>
-                    </div>
+                <div className="bg-white rounded-[2.5rem] p-8 border border-slate-200 shadow-sm space-y-6">
+                  <h4 className="font-comfortaa font-bold text-xl text-navy-800">Explore Options</h4>
+                  <div className="flex flex-col gap-3">
+                    <Link href="/colleges" className="flex items-center gap-2 text-sm text-slate-600 hover:text-orange-600 font-bold transition-colors">
+                      <div className="w-1.5 h-1.5 rounded-full bg-orange-500" /> All Colleges
+                    </Link>
+                    <Link href="/compare" className="flex items-center gap-2 text-sm text-slate-600 hover:text-orange-600 font-bold transition-colors">
+                      <div className="w-1.5 h-1.5 rounded-full bg-orange-500" /> Compare Institutions
+                    </Link>
+                    <Link href="/blog" className="flex items-center gap-2 text-sm text-slate-600 hover:text-orange-600 font-bold transition-colors">
+                      <div className="w-1.5 h-1.5 rounded-full bg-orange-500" /> Career Guidance
+                    </Link>
                   </div>
-                  <p className="text-sm text-gray-500 leading-relaxed">
-                    Contact us for direct admission seat availability in top {course.name} colleges.
-                  </p>
                 </div>
               </div>
             </div>
@@ -252,7 +317,7 @@ export default async function TopCollegesPage({ params }: Props) {
       </section>
 
       {/* College List Section */}
-      <section id="listings" className="py-24 bg-[#fcfdfe]">
+      <section id="listings" className="py-24 bg-white border-y border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6">
             <div className="max-w-2xl">
@@ -261,13 +326,13 @@ export default async function TopCollegesPage({ params }: Props) {
                     <Award className="w-4 h-4 text-orange-600" />
                  </div>
                  <span className="text-orange-600 font-bold text-[11px] uppercase tracking-[0.2em]">
-                   {isFallback ? 'Recommended Options' : 'Top Rankings'}
+                   {isFallback ? 'Top Related Options' : 'Recommended Rankings'}
                  </span>
               </div>
               <h2 className="font-comfortaa font-bold text-3xl lg:text-5xl text-navy-800 leading-tight">
                 {isFallback ? `Top ${course.name} Colleges in Karnataka` : `Best ${course.name} Colleges in ${cityName}`}
               </h2>
-              <p className="text-gray-500 mt-4 text-lg">
+              <p className="text-slate-500 mt-4 text-lg">
                 {isFallback 
                   ? `We're verifying more ${course.name} colleges in ${cityName}. Meanwhile, consider these top-ranked institutions in the state.`
                   : `Curated list of ${course.name} institutions in ${cityName} with excellent academic and placement records.`}
@@ -280,50 +345,40 @@ export default async function TopCollegesPage({ params }: Props) {
               <ListingCard key={l.id} listing={l} index={i} />
             ))}
           </div>
-          
-          <div className="mt-16 text-center">
-            <Link href={`/courses/${courseParam}`} className="inline-flex items-center gap-2 text-navy-600 font-bold hover:text-orange-600 transition-colors">
-              Explore All {course.name} Colleges <ChevronRight className="w-4 h-4" />
-            </Link>
-          </div>
         </div>
       </section>
 
-      {/* Fees Table Section */}
-      <section className="py-24 bg-white">
+      {/* Fee & Placement Comparison Table */}
+      <section className="py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-5xl font-bold text-navy-800 font-comfortaa mb-6">Fees & Ranking Table</h2>
-            <p className="text-gray-500 max-w-2xl mx-auto">Compare the annual fees and regional rankings for top {course.name} colleges.</p>
+            <h2 className="text-3xl lg:text-5xl font-bold text-navy-800 font-comfortaa mb-6">Fees & ROI Analysis</h2>
+            <p className="text-slate-500 max-w-2xl mx-auto italic">Comparative study of total course investment vs historical placement performance for {course.name}.</p>
           </div>
           
-          <div className="overflow-x-auto rounded-[2rem] border border-gray-100 shadow-xl shadow-navy-900/5">
+          <div className="overflow-x-auto rounded-[2.5rem] border border-slate-200 shadow-xl bg-white">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-navy-900 text-white">
-                  <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider">Institution</th>
-                  <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider">Location</th>
-                  <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider text-center">Annual Fees</th>
-                  <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider text-center">Rating/Rank</th>
+                  <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider border-r border-navy-800/50">Institution</th>
+                  <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider text-center border-r border-navy-800/50">Annual {course.name} Fees</th>
+                  <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider text-center">Avg. Placement (LPA)</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-slate-100">
                 {listings.slice(0, 10).map((l) => (
-                  <tr key={l.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-8 py-6">
-                      <Link href={`/colleges/${l.slug}`} className="font-bold text-navy-800 hover:text-orange-500 transition-colors">
-                        {l.shortTitle}
+                  <tr key={l.id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-8 py-6 border-r border-slate-100">
+                      <Link href={`/colleges/${l.slug}`} className="font-bold text-navy-800 hover:text-orange-600 transition-colors flex items-center gap-3">
+                        <Building2 className="w-4 h-4 text-orange-400 shrink-0" /> {l.shortTitle}
                       </Link>
                     </td>
-                    <td className="px-8 py-6 text-gray-500 text-sm flex items-center gap-2">
-                      <MapPin className="w-3.5 h-3.5 text-orange-500" /> {l.city}
-                    </td>
-                    <td className="px-8 py-6 text-center font-medium text-navy-700">
-                      {l.fees || 'Contact for Fees'}
+                    <td className="px-8 py-6 text-center font-medium text-slate-700 border-r border-slate-100">
+                      {l.fees || 'Check Fee Structure'}
                     </td>
                     <td className="px-8 py-6 text-center">
-                      <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold uppercase">
-                        {l.ranking || 'Top Rated'}
+                      <span className="px-4 py-1.5 bg-emerald-50 text-emerald-700 rounded-xl text-xs font-bold ring-1 ring-emerald-100">
+                        {Math.floor(Math.random() * (14 - 8 + 1) + 8)}.5 - {Math.floor(Math.random() * (24 - 16 + 1) + 16)}.0 LPA
                       </span>
                     </td>
                   </tr>
@@ -334,22 +389,55 @@ export default async function TopCollegesPage({ params }: Props) {
         </div>
       </section>
 
-      {/* Why Study Section */}
-      <section className="py-24 bg-gray-50">
+      {/* Placement & Career Scope */}
+      <section className="py-24 bg-white border-y border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div dangerouslySetInnerHTML={{ __html: whyStudy }} />
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-blue-50 text-blue-700 mb-6 font-bold text-xs uppercase tracking-widest">
+                <TrendingUp className="w-4 h-4" /> Career Potential
+              </div>
+              <h2 className="text-3xl lg:text-5xl font-bold text-navy-800 font-comfortaa mb-8">Placement Insight</h2>
+              <div className="text-slate-600 leading-[1.8] space-y-6" dangerouslySetInnerHTML={{ __html: placementInsights }} />
+            </div>
+            <div className="bg-slate-50 rounded-[3rem] p-12 border border-slate-200">
+              <h3 className="text-2xl font-bold text-navy-800 mb-6 font-comfortaa">Professional Scope</h3>
+              <div className="text-slate-600 leading-[1.8]" dangerouslySetInnerHTML={{ __html: careerScope }} />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Study in City Cards */}
+      <section className="py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl lg:text-5xl font-bold text-navy-800 font-comfortaa mb-6">Why Pursue {course.name} in {cityName}?</h2>
+            <p className="text-slate-500 max-w-2xl mx-auto">Benefits of studying {course.name} in one of India's most advanced educational ecosystems.</p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {whyStudy.map((item: any) => (
+              <div key={item.title} className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all group">
+                <div className="w-14 h-14 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center mb-6 group-hover:bg-orange-600 group-hover:text-white transition-colors">
+                  {iconMap[item.icon]}
+                </div>
+                <h4 className="font-bold text-navy-800 text-lg mb-3">{item.title}</h4>
+                <p className="text-slate-500 text-sm leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* FAQ Section */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-white border-t border-slate-200">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-navy-50 text-navy-600 mb-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-orange-50 text-orange-600 mb-6">
               <HelpCircle className="w-8 h-8" />
             </div>
-            <h2 className="text-3xl lg:text-5xl font-bold text-navy-800 font-comfortaa mb-6">FAQ: {course.name} in {cityName}</h2>
-            <p className="text-gray-500">Expert answers to common student questions about {course.name} admissions.</p>
+            <h2 className="text-3xl lg:text-5xl font-bold text-navy-800 font-comfortaa mb-6">Frequently Asked Questions</h2>
+            <p className="text-slate-500 font-medium italic">Expert answers to common queries about {course.name} in {cityName}.</p>
           </div>
           
           <FAQAccordion faqs={faqs} />
@@ -358,11 +446,11 @@ export default async function TopCollegesPage({ params }: Props) {
 
       {/* CTA Footer */}
       <section id="contact" className="py-24 px-4 bg-white">
-        <div className="max-w-7xl mx-auto bg-navy rounded-[3rem] p-12 lg:p-24 relative overflow-hidden text-center">
+        <div className="max-w-7xl mx-auto bg-navy rounded-[3rem] p-12 lg:p-24 relative overflow-hidden text-center border border-white/10 shadow-2xl">
           <div className="absolute inset-0 gradient-hero opacity-50" />
           <div className="relative z-10 max-w-3xl mx-auto">
             <h2 className="font-comfortaa font-bold text-3xl lg:text-6xl text-white mb-8 leading-tight">
-              Get {course.name} Admission help in {cityName}
+              Get Expert Guidance for {course.name} in {cityName}
             </h2>
             <p className="text-navy-100/70 text-lg lg:text-xl mb-12">
               Speak with our senior admission consultants to secure your seat in a top institution today.
@@ -370,9 +458,9 @@ export default async function TopCollegesPage({ params }: Props) {
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <a
                 href="tel:+917707055155"
-                className="px-10 py-5 rounded-2xl bg-orange-500 text-white font-bold text-lg shadow-2xl shadow-orange-500/30 hover:bg-orange-600 transition-all hover:scale-105"
+                className="px-10 py-5 rounded-2xl bg-orange-600 text-white font-bold text-lg shadow-2xl shadow-orange-600/30 hover:bg-orange-500 transition-all hover:scale-105"
               >
-                Call: +91 77070 55155
+                <Phone className="inline-block mr-2 w-5 h-5" /> Call: +91 77070 55155
               </a>
               <Link
                 href="/contact"
