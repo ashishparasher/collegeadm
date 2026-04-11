@@ -42,27 +42,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // Programmatic SEO URLs: Colleges in [City]
-  const cities = Array.from(new Set(colleges.map(c => c.location.split(',')[0].trim().toLowerCase())));
-  const cityUrls = cities.map(city => ({
+  const pSeoCities = ["bangalore", "mysore", "mangalore", "hubli", "belgaum"];
+  const cityUrls = pSeoCities.map(city => ({
     url: `${baseUrl}/colleges-in-${city}`,
     lastModified: new Date(),
   }));
 
   // Programmatic SEO URLs: Top [Course] Colleges in [City]
+  const pSeoCourses = ["mba", "btech", "bca", "bba", "mbbs"];
+  const pSeoCitiesTop = ["bangalore", "mysore", "mangalore"];
   const topCollegesUrls: any[] = [];
-  const processedPairs = new Set();
 
-  colleges.forEach(college => {
-    const city = college.location.split(',')[0].trim().toLowerCase();
-    college.courses.forEach(course => {
-      const pair = `${course.slug}-${city}`;
-      if (!processedPairs.has(pair)) {
-        processedPairs.add(pair);
-        topCollegesUrls.push({
-          url: `${baseUrl}/top-colleges/${course.slug}/${city}`,
-          lastModified: new Date(),
-        });
-      }
+  pSeoCourses.forEach(course => {
+    pSeoCitiesTop.forEach(city => {
+      topCollegesUrls.push({
+        url: `${baseUrl}/top-colleges/${course}/${city}`,
+        lastModified: new Date(),
+      });
     });
   });
 

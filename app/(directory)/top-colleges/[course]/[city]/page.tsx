@@ -14,40 +14,37 @@ interface Props {
   params: { course: string; city: string };
 }
 
-export async function generateStaticParams() {
-  const colleges = await prisma.college.findMany({ 
-    include: { courses: true }
-  });
-  
-  const params: { course: string; city: string }[] = [];
-  
-  colleges.forEach(college => {
-    const city = college.location.split(',')[0].trim().toLowerCase();
-    college.courses.forEach(course => {
-      params.push({ course: course.slug, city });
-    });
-  });
+export const dynamicParams = true;
 
-  return params;
+export async function generateStaticParams() {
+  const courses = ["mba", "btech", "bca", "bba", "mbbs"];
+  const cities = ["bangalore", "mysore", "mangalore"];
+
+  return courses.flatMap(course =>
+    cities.map(city => ({
+      course,
+      city
+    }))
+  );
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const course = await prisma.course.findUnique({ where: { slug: params.course } });
-  const cityName = params.city.charAt(0).toUpperCase() + params.city.slice(1);
+  const city = params?.city || '';
+  const courseSlug = params?.course || '';
+  const cityName = city.charAt(0).toUpperCase() + city.slice(1);
+  const courseName = courseSlug.toUpperCase();
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://collegeadm.org';
   
-  if (!course) return { title: 'Top Colleges' };
-
   return {
-    title: `Top ${course.name} Colleges in ${cityName} - Admission 2026 Guide`,
-    description: `Ranked list of best ${course.name} colleges in ${cityName}. Check fees, rankings, and secure your direct admission seat with expert guidance.`,
+    title: `Best ${courseName} Colleges in ${cityName} | Admission Guide 2026`,
+    description: `Explore top ${courseName} institutions in ${cityName} with fees, rankings and admission guidance. Secure your direct admission seat today.`,
     alternates: {
-      canonical: `${baseUrl}/top-colleges/${params.course}/${params.city}`,
+      canonical: `${baseUrl}/top-colleges/${courseSlug}/${city}`,
     },
     openGraph: {
-      title: `Best ${course.name} Colleges in ${cityName} | Admission 2026`,
-      description: `Explore top ${course.name} institutions in ${cityName} with fees, rankings and admission guidance.`,
-      url: `${baseUrl}/top-colleges/${params.course}/${params.city}`,
+      title: `Best ${courseName} Colleges in ${cityName} | Admission Guide`,
+      description: `Find top-ranked ${courseName} colleges in ${cityName}. Get details on fees, rankings and admission process.`,
+      url: `${baseUrl}/top-colleges/${courseSlug}/${city}`,
       type: 'website',
     }
   };
@@ -55,14 +52,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function TopCollegesPage({ params }: Props) {
   const year = new Date().getFullYear();
-  const cityParam = params?.city || '';
-  const courseParam = params?.course || '';
+  const cityParam = params?.city;
+  const courseParam = params?.course;
   
-  if (!cityParam || !courseParam) return notFound();
+  if (!cityParam || !courseParam) {
+    notFound();
+  }
   
   const course = await prisma.course.findUnique({
     where: { slug: courseParam },
   });
+  
   const cityName = cityParam.charAt(0).toUpperCase() + cityParam.slice(1);
 
   if (!course) notFound();

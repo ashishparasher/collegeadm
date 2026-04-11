@@ -118,6 +118,19 @@
       "static/chunks/8199-32e498c06711eec2.js",
       "static/chunks/app/(directory)/compare/[slug]/page-e726695c651c79e9.js"
     ],
+    "/(directory)/[city-slug]/page": [
+      "static/chunks/webpack-e4eb5ccb57267d13.js",
+      "static/chunks/fd9d1056-8d24ff03c1db56a5.js",
+      "static/chunks/7023-4e4ec6e9bee2684a.js",
+      "static/chunks/main-app-0b40a972a2e4fa6b.js",
+      "static/chunks/231-8128e4d505d39bbc.js",
+      "static/chunks/8502-1a4ea86276fb104b.js",
+      "static/chunks/1513-4ca582e069b44685.js",
+      "static/chunks/8173-c3c4ea4f3f960a33.js",
+      "static/chunks/8199-32e498c06711eec2.js",
+      "static/chunks/1532-1244949bef8b42ff.js",
+      "static/chunks/app/(directory)/[city-slug]/page-cef7fa98fc361c1a.js"
+    ],
     "/(directory)/exams/[slug]/page": [
       "static/chunks/webpack-e4eb5ccb57267d13.js",
       "static/chunks/fd9d1056-8d24ff03c1db56a5.js",
@@ -136,19 +149,6 @@
       "static/chunks/main-app-0b40a972a2e4fa6b.js",
       "static/chunks/231-8128e4d505d39bbc.js",
       "static/chunks/app/(directory)/scholarships/page-c8e8bf2f60a2a667.js"
-    ],
-    "/(directory)/colleges-in-[city]/page": [
-      "static/chunks/webpack-e4eb5ccb57267d13.js",
-      "static/chunks/fd9d1056-8d24ff03c1db56a5.js",
-      "static/chunks/7023-4e4ec6e9bee2684a.js",
-      "static/chunks/main-app-0b40a972a2e4fa6b.js",
-      "static/chunks/231-8128e4d505d39bbc.js",
-      "static/chunks/8502-1a4ea86276fb104b.js",
-      "static/chunks/1513-4ca582e069b44685.js",
-      "static/chunks/8173-c3c4ea4f3f960a33.js",
-      "static/chunks/8199-32e498c06711eec2.js",
-      "static/chunks/1532-1244949bef8b42ff.js",
-      "static/chunks/app/(directory)/colleges-in-[city]/page-53c8777bdc5f4ffe.js"
     ],
     "/(directory)/search/page": [
       "static/chunks/webpack-e4eb5ccb57267d13.js",
@@ -184,6 +184,14 @@
       "static/chunks/1532-1244949bef8b42ff.js",
       "static/chunks/app/(directory)/top-colleges/[course]/[city]/page-646ae3431a2a7f4e.js"
     ],
+    "/contact/page": [
+      "static/chunks/webpack-e4eb5ccb57267d13.js",
+      "static/chunks/fd9d1056-8d24ff03c1db56a5.js",
+      "static/chunks/7023-4e4ec6e9bee2684a.js",
+      "static/chunks/main-app-0b40a972a2e4fa6b.js",
+      "static/chunks/8502-1a4ea86276fb104b.js",
+      "static/chunks/app/contact/page-efeaa2b36be58e95.js"
+    ],
     "/faq/page": [
       "static/chunks/webpack-e4eb5ccb57267d13.js",
       "static/chunks/fd9d1056-8d24ff03c1db56a5.js",
@@ -199,14 +207,6 @@
       "static/chunks/7023-4e4ec6e9bee2684a.js",
       "static/chunks/main-app-0b40a972a2e4fa6b.js",
       "static/chunks/app/privacy-policy/page-9e06c19d8654df29.js"
-    ],
-    "/contact/page": [
-      "static/chunks/webpack-e4eb5ccb57267d13.js",
-      "static/chunks/fd9d1056-8d24ff03c1db56a5.js",
-      "static/chunks/7023-4e4ec6e9bee2684a.js",
-      "static/chunks/main-app-0b40a972a2e4fa6b.js",
-      "static/chunks/8502-1a4ea86276fb104b.js",
-      "static/chunks/app/contact/page-efeaa2b36be58e95.js"
     ],
     "/admin/colleges/new/page": [
       "static/chunks/webpack-e4eb5ccb57267d13.js",
@@ -226,13 +226,13 @@
       "static/chunks/998-2da670b3eb16a52a.js",
       "static/chunks/app/admin/layout-bf1b726f07a707ae.js"
     ],
-    "/admin/courses/new/page": [
+    "/admin/exams/new/page": [
       "static/chunks/webpack-e4eb5ccb57267d13.js",
       "static/chunks/fd9d1056-8d24ff03c1db56a5.js",
       "static/chunks/7023-4e4ec6e9bee2684a.js",
       "static/chunks/main-app-0b40a972a2e4fa6b.js",
       "static/chunks/8199-32e498c06711eec2.js",
-      "static/chunks/app/admin/courses/new/page-45d4a4f478ee96d8.js"
+      "static/chunks/app/admin/exams/new/page-c4c71977c1c02830.js"
     ],
     "/admin/login/page": [
       "static/chunks/webpack-e4eb5ccb57267d13.js",
@@ -241,14 +241,6 @@
       "static/chunks/main-app-0b40a972a2e4fa6b.js",
       "static/chunks/998-2da670b3eb16a52a.js",
       "static/chunks/app/admin/login/page-ee5a9f8613995776.js"
-    ],
-    "/admin/exams/new/page": [
-      "static/chunks/webpack-e4eb5ccb57267d13.js",
-      "static/chunks/fd9d1056-8d24ff03c1db56a5.js",
-      "static/chunks/7023-4e4ec6e9bee2684a.js",
-      "static/chunks/main-app-0b40a972a2e4fa6b.js",
-      "static/chunks/8199-32e498c06711eec2.js",
-      "static/chunks/app/admin/exams/new/page-c4c71977c1c02830.js"
     ],
     "/admin/posts/new/page": [
       "static/chunks/webpack-e4eb5ccb57267d13.js",
@@ -260,6 +252,14 @@
       "static/chunks/8199-32e498c06711eec2.js",
       "static/chunks/2420-ce361b6adaebdebe.js",
       "static/chunks/app/admin/posts/new/page-370182c8dd4ca7cd.js"
+    ],
+    "/admin/courses/new/page": [
+      "static/chunks/webpack-e4eb5ccb57267d13.js",
+      "static/chunks/fd9d1056-8d24ff03c1db56a5.js",
+      "static/chunks/7023-4e4ec6e9bee2684a.js",
+      "static/chunks/main-app-0b40a972a2e4fa6b.js",
+      "static/chunks/8199-32e498c06711eec2.js",
+      "static/chunks/app/admin/courses/new/page-45d4a4f478ee96d8.js"
     ],
     "/admin/colleges/edit/[id]/page": [
       "static/chunks/webpack-e4eb5ccb57267d13.js",
@@ -287,14 +287,6 @@
       "static/chunks/8173-c3c4ea4f3f960a33.js",
       "static/chunks/app/admin/colleges/page-8e43bc8ecd83b5f8.js"
     ],
-    "/admin/courses/page": [
-      "static/chunks/webpack-e4eb5ccb57267d13.js",
-      "static/chunks/fd9d1056-8d24ff03c1db56a5.js",
-      "static/chunks/7023-4e4ec6e9bee2684a.js",
-      "static/chunks/main-app-0b40a972a2e4fa6b.js",
-      "static/chunks/231-8128e4d505d39bbc.js",
-      "static/chunks/app/admin/courses/page-9b9491b9bfd166f9.js"
-    ],
     "/admin/exams/edit/[id]/page": [
       "static/chunks/webpack-e4eb5ccb57267d13.js",
       "static/chunks/fd9d1056-8d24ff03c1db56a5.js",
@@ -303,6 +295,14 @@
       "static/chunks/8199-32e498c06711eec2.js",
       "static/chunks/app/admin/exams/edit/[id]/page-01575221af67d542.js"
     ],
+    "/admin/courses/page": [
+      "static/chunks/webpack-e4eb5ccb57267d13.js",
+      "static/chunks/fd9d1056-8d24ff03c1db56a5.js",
+      "static/chunks/7023-4e4ec6e9bee2684a.js",
+      "static/chunks/main-app-0b40a972a2e4fa6b.js",
+      "static/chunks/231-8128e4d505d39bbc.js",
+      "static/chunks/app/admin/courses/page-9b9491b9bfd166f9.js"
+    ],
     "/admin/exams/page": [
       "static/chunks/webpack-e4eb5ccb57267d13.js",
       "static/chunks/fd9d1056-8d24ff03c1db56a5.js",
@@ -310,6 +310,17 @@
       "static/chunks/main-app-0b40a972a2e4fa6b.js",
       "static/chunks/231-8128e4d505d39bbc.js",
       "static/chunks/app/admin/exams/page-973b8df2a1dbefaa.js"
+    ],
+    "/admin/posts/edit/[id]/page": [
+      "static/chunks/webpack-e4eb5ccb57267d13.js",
+      "static/chunks/fd9d1056-8d24ff03c1db56a5.js",
+      "static/chunks/7023-4e4ec6e9bee2684a.js",
+      "static/chunks/main-app-0b40a972a2e4fa6b.js",
+      "static/chunks/70e0d97a-64c92e319b73e1a5.js",
+      "static/chunks/54a60aa6-497a99bb2112f961.js",
+      "static/chunks/8199-32e498c06711eec2.js",
+      "static/chunks/2420-ce361b6adaebdebe.js",
+      "static/chunks/app/admin/posts/edit/[id]/page-4a878cd98b997cba.js"
     ],
     "/admin/leads/page": [
       "static/chunks/webpack-e4eb5ccb57267d13.js",
@@ -325,17 +336,6 @@
       "static/chunks/main-app-0b40a972a2e4fa6b.js",
       "static/chunks/8173-c3c4ea4f3f960a33.js",
       "static/chunks/app/admin/media/page-53adeb1bfdc4e162.js"
-    ],
-    "/admin/posts/edit/[id]/page": [
-      "static/chunks/webpack-e4eb5ccb57267d13.js",
-      "static/chunks/fd9d1056-8d24ff03c1db56a5.js",
-      "static/chunks/7023-4e4ec6e9bee2684a.js",
-      "static/chunks/main-app-0b40a972a2e4fa6b.js",
-      "static/chunks/70e0d97a-64c92e319b73e1a5.js",
-      "static/chunks/54a60aa6-497a99bb2112f961.js",
-      "static/chunks/8199-32e498c06711eec2.js",
-      "static/chunks/2420-ce361b6adaebdebe.js",
-      "static/chunks/app/admin/posts/edit/[id]/page-4a878cd98b997cba.js"
     ],
     "/admin/page": [
       "static/chunks/webpack-e4eb5ccb57267d13.js",

@@ -11,29 +11,34 @@ import { LeadForm } from '@/components/ui/LeadForm';
 import { FAQAccordion } from '@/components/ui/FAQAccordion';
 
 interface Props {
-  params: { city: string };
+  params: { "city-slug": string };
 }
 
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
-  const colleges = await prisma.college.findMany({ select: { location: true } });
-  const cities = Array.from(new Set(colleges.map(c => c.location.split(',')[0].trim().toLowerCase())));
-  return cities.map((city) => ({ city }));
+  const cities = ["bangalore", "mysore", "mangalore", "hubli", "belgaum"];
+  return cities.map((city) => ({ "city-slug": `colleges-in-${city}` }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const city = params?.city ? (params.city.charAt(0).toUpperCase() + params.city.slice(1)) : 'Locations';
+  const slug = params?.["city-slug"] || "";
+  if (!slug.startsWith("colleges-in-")) return {};
+  
+  const city = slug.replace("colleges-in-", "");
+  const cityName = city.charAt(0).toUpperCase() + city.slice(1);
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://collegeadm.org';
   
   return {
-    title: `Best Colleges in ${city} - Direct Admission 2026 Guide`,
-    description: `Discover top-ranked colleges in ${city}. Get complete details on fees, rankings, and secure your direct admission under management quota seats today.`,
+    title: `Top Colleges in ${cityName} | Admission Guide 2026`,
+    description: `Explore the best colleges in ${cityName} with fees, rankings and admission details. Secure your direct admission under management quota seats today.`,
     alternates: {
-      canonical: `${baseUrl}/colleges-in-${params.city}`,
+      canonical: `${baseUrl}/${slug}`,
     },
     openGraph: {
-      title: `Best Colleges in ${city} | Admission 2026`,
-      description: `Explore the best colleges in ${city} with fees, rankings and admission process guidance.`,
-      url: `${baseUrl}/colleges-in-${params.city}`,
+      title: `Top Colleges in ${cityName} | Admission Guide`,
+      description: `Discover top-ranked colleges in ${cityName}. Get complete details on fees, rankings and more.`,
+      url: `${baseUrl}/${slug}`,
       type: 'website',
     }
   };
@@ -41,9 +46,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CityPage({ params }: Props) {
   const year = new Date().getFullYear()
-  const cityParam = params?.city || '';
-  if (!cityParam) return notFound();
+  const slug = params?.["city-slug"] || "";
   
+  if (!slug.startsWith("colleges-in-")) {
+    notFound();
+  }
+  
+  const cityParam = slug.replace("colleges-in-", "");
   const cityName = cityParam.charAt(0).toUpperCase() + cityParam.slice(1);
   
   const dbListings = await prisma.college.findMany({
@@ -68,7 +77,7 @@ export default async function CityPage({ params }: Props) {
     collegeType: 'Partner'
   }));
 
-  const { intro, admissionProcess, whyStudy, faqs } = generateCitySEOTemplate(params.city, listings);
+  const { intro, admissionProcess, whyStudy, faqs } = generateCitySEOTemplate(cityParam, listings);
 
   // Schema Structured Data
   const jsonLd = {
