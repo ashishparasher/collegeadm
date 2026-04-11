@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"
+
 // app/(directory)/search/page.tsx
 import { prisma } from '@/lib/prisma';
 import { ListingCard } from '@/components/directory/ListingCard';
