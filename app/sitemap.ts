@@ -1,87 +1,68 @@
 export const dynamic = "force-dynamic"
 
-// app/sitemap.ts
 import { MetadataRoute } from 'next';
 import { prisma } from '@/lib/prisma';
+import { cities, courses, modifiers } from '@/lib/seoKeywords';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://collegeadm.org';
 
-  const [colleges, posts, courses, exams] = await Promise.all([
-    prisma.college.findMany({ 
-      select: { 
-        slug: true, 
-        updatedAt: true, 
-        location: true,
-        courses: { select: { slug: true } }
-      }
-    }),
+  // 1. Static & Data Driven Pages
+  const [dbColleges, posts] = await Promise.all([
+    prisma.college.findMany({ select: { slug: true, updatedAt: true } }),
     prisma.post.findMany({ select: { slug: true, updatedAt: true } }),
-    prisma.course.findMany({ select: { slug: true } }),
-    prisma.exam.findMany({ select: { slug: true } }),
   ]);
 
-  const collegeUrls = colleges.map((c) => ({
+  const staticRoutes = ['', '/colleges', '/blog', '/compare', '/contact', '/faq', '/scholarships']
+    .map(route => ({ url: `${baseUrl}${route}`, lastModified: new Date() }));
+
+  const collegePages = dbColleges.map(c => ({
     url: `${baseUrl}/colleges/${c.slug}`,
     lastModified: c.updatedAt,
   }));
 
-  const postUrls = posts.map((p) => ({
+  const blogPages = posts.map(p => ({
     url: `${baseUrl}/blog/${p.slug}`,
     lastModified: p.updatedAt,
   }));
 
-  const courseUrls = courses.map((c) => ({
-    url: `${baseUrl}/courses/${c.slug}`,
-    lastModified: new Date(),
-  }));
-
-  const examUrls = exams.map((e) => ({
-    url: `${baseUrl}/exams/${e.slug}`,
-    lastModified: new Date(),
-  }));
-
-  // Programmatic SEO URLs: Colleges in [City]
-  const pSeoCities = ["bangalore", "mysore", "mangalore", "hubli", "belgaum"];
-  const cityUrls = pSeoCities.map(city => ({
-    url: `${baseUrl}/colleges-in-${city}`,
-    lastModified: new Date(),
-  }));
-
-  // Programmatic SEO URLs: Top [Course] Colleges in [City]
-  const pSeoCourses = ["mba", "btech", "bca", "bba", "mbbs"];
-  const pSeoCitiesTop = ["bangalore", "mysore", "mangalore"];
-  const topCollegesUrls: any[] = [];
-
-  pSeoCourses.forEach(course => {
-    pSeoCitiesTop.forEach(city => {
-      topCollegesUrls.push({
-        url: `${baseUrl}/top-colleges/${course}/${city}`,
-        lastModified: new Date(),
+  // 2. Programmatic SEO Routes: [modifier]-[course]-colleges-in-[city]
+  const pSeoPages: any[] = [];
+  // For sitemap, we include a high-value subset to avoid exceeding limits
+  modifiers.forEach(modifier => {
+    courses.forEach(course => {
+      cities.slice(0, 8).forEach(city => {
+        pSeoPages.push({
+          url: `${baseUrl}/${modifier}-${course}-colleges-in-${city}`,
+          lastModified: new Date(),
+        });
       });
     });
   });
 
-  const staticUrls = [
-    '',
-    '/colleges',
-    '/blog',
-    '/compare',
-    '/contact',
-    '/faq',
-    '/scholarships',
-  ].map((route) => ({
-    url: `${baseUrl}${route}`,
+  // 3. Comparisons
+  const comparisonPages: any[] = [];
+  for (let i = 0; i < Math.min(dbColleges.length, 15); i++) {
+    for (let j = i + 1; j < Math.min(dbColleges.length, 16); j++) {
+      comparisonPages.push({
+        url: `${baseUrl}/compare/${dbColleges[i].slug}-vs-${dbColleges[j].slug}`,
+        lastModified: new Date(),
+      });
+    }
+  }
+
+  // 4. City catch-all legacy
+  const cityPages = cities.map(city => ({
+    url: `${baseUrl}/colleges-in-${city}`,
     lastModified: new Date(),
   }));
 
   return [
-    ...staticUrls, 
-    ...collegeUrls, 
-    ...postUrls, 
-    ...courseUrls, 
-    ...examUrls, 
-    ...cityUrls,
-    ...topCollegesUrls
+    ...staticRoutes,
+    ...collegePages,
+    ...blogPages,
+    ...pSeoPages,
+    ...comparisonPages,
+    ...cityPages
   ];
 }
