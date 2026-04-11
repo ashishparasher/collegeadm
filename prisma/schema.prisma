@@ -1,0 +1,117 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model College {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  location      String
+  state         String?
+  description   String
+  fees          String?
+  cutoff        String?
+  ranking       String?
+  featuredImage String?
+  website       String?
+  gallery       Media[]
+  category      Category? @relation(fields: [categoryId], references: [id])
+  categoryId    String?
+  leads         Lead[]
+  courses       Course[]
+  exams         Exam[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([slug])
+  @@index([location])
+}
+
+model Course {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  colleges  College[]
+  createdAt DateTime  @default(now())
+}
+
+model Exam {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  colleges    College[]
+  createdAt   DateTime  @default(now())
+}
+
+model Scholarship {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String
+  amount      String?
+  eligibility String?
+  createdAt   DateTime @default(now())
+}
+
+model Post {
+  id              String   @id @default(cuid())
+  title           String
+  slug            String   @unique
+  content         String
+  featuredImage   String?
+  metaTitle       String?
+  metaDescription String?
+  category        Category? @relation(fields: [categoryId], references: [id])
+  categoryId      String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([slug])
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  slug     String    @unique
+  colleges College[]
+  posts    Post[]
+}
+
+model Lead {
+  id              String   @id @default(cuid())
+  name            String
+  phone           String
+  email           String
+  message         String?
+  collegeInterest String?
+  college         College? @relation(fields: [collegeId], references: [id])
+  collegeId       String?
+  createdAt       DateTime @default(now())
+}
+
+model Media {
+  id        String   @id @default(cuid())
+  url       String
+  alt       String?
+  college   College? @relation(fields: [collegeId], references: [id])
+  collegeId String?
+  createdAt DateTime @default(now())
+}
