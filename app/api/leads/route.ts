@@ -1,4 +1,5 @@
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"
+export const runtime = "nodejs"
 
 // app/api/leads/route.ts
 import { NextRequest, NextResponse } from 'next/server';

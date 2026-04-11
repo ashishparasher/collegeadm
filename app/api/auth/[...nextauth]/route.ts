@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs"
 
 // app/api/auth/[...nextauth]/route.ts
 import NextAuth from 'next-auth';
