@@ -5,10 +5,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
 import { ListingCard } from '@/components/directory/ListingCard';
-import { Award, ChevronRight, MapPin, GraduationCap, Building2, HelpCircle, Phone, MessageSquare } from 'lucide-react';
+import { Award, ChevronRight, MapPin, GraduationCap, Building2, HelpCircle, Phone, MessageSquare, Sparkles } from 'lucide-react';
 import { generateCitySEOTemplate } from '@/lib/templates';
 import { LeadForm } from '@/components/ui/LeadForm';
 import { FAQAccordion } from '@/components/ui/FAQAccordion';
+import { getCityVariants } from '@/lib/utils';
 
 interface Props {
   params: { course: string; city: string };
@@ -36,8 +37,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://collegeadm.org';
   
   return {
-    title: `Best ${courseName} Colleges in ${cityName} | Admission Guide 2026`,
-    description: `Explore top ${courseName} institutions in ${cityName} with fees, rankings and admission guidance. Secure your direct admission seat today.`,
+    title: `Best ${courseName} Colleges in ${cityName} 2026 | Admission Guide`,
+    description: `Explore top ${courseName} institutions in ${cityName} with updated fees, rankings and admission guidance. Secure your direct admission seat today.`,
     alternates: {
       canonical: `${baseUrl}/top-colleges/${courseSlug}/${city}`,
     },
@@ -64,19 +65,44 @@ export default async function TopCollegesPage({ params }: Props) {
   });
   
   const cityName = cityParam.charAt(0).toUpperCase() + cityParam.slice(1);
+  const cityVariants = getCityVariants(cityParam);
 
   if (!course) notFound();
 
-  const dbListings = await prisma.college.findMany({
+  // Try to find colleges for specific course in specific city
+  let dbListings = await prisma.college.findMany({
     where: {
-      location: { contains: cityParam },
-      courses: { some: { slug: courseParam } }
+      AND: [
+        { courses: { some: { slug: courseParam } } },
+        {
+          OR: cityVariants.map(variant => ({
+            location: {
+              contains: variant,
+              mode: 'insensitive' as const
+            }
+          }))
+        }
+      ]
     },
     include: {
       courses: true
     },
     orderBy: { createdAt: 'desc' }
   });
+
+  let isFallback = false;
+  // If no colleges found, fallback to course-specific colleges statewide
+  if (dbListings.length === 0) {
+    isFallback = true;
+    dbListings = await prisma.college.findMany({
+      where: {
+        courses: { some: { slug: courseParam } }
+      },
+      take: 6,
+      include: { courses: true },
+      orderBy: { createdAt: 'desc' }
+    });
+  }
 
   const listings = dbListings.map(l => ({
     ...l,
@@ -88,7 +114,7 @@ export default async function TopCollegesPage({ params }: Props) {
     collegeType: 'Partner'
   }));
 
-  const { intro, admissionProcess, whyStudy, faqs } = generateCitySEOTemplate(params.city, listings, course.name);
+  const { intro, admissionProcess, whyStudy, faqs } = generateCitySEOTemplate(cityParam, listings, course.name);
 
   // Schema Structured Data
   const jsonLd = {
@@ -100,7 +126,7 @@ export default async function TopCollegesPage({ params }: Props) {
           { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://collegeadm.org' },
           { '@type': 'ListItem', position: 2, name: 'Courses', item: 'https://collegeadm.org/courses' },
           { '@type': 'ListItem', position: 3, name: course.name, item: `https://collegeadm.org/courses/${params.course}` },
-          { '@type': 'ListItem', position: 4, name: `Colleges in ${cityName}` }
+          { '@type': 'ListItem', position: 4, name: `${course.name} in ${cityName}` }
         ]
       },
       {
@@ -146,7 +172,7 @@ export default async function TopCollegesPage({ params }: Props) {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
                 </span>
-                <span className="text-white text-[11px] font-bold uppercase tracking-wider">Top Rankings 2026</span>
+                <span className="text-white text-[11px] font-bold uppercase tracking-wider">Top Rankings {year}</span>
               </div>
               
               <h1 className="font-comfortaa font-bold text-4xl lg:text-6xl text-white mb-6 leading-tight">
@@ -234,77 +260,79 @@ export default async function TopCollegesPage({ params }: Props) {
                  <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center">
                     <Award className="w-4 h-4 text-orange-600" />
                  </div>
-                 <span className="text-orange-600 font-bold text-[11px] uppercase tracking-[0.2em]">Top Rankings</span>
+                 <span className="text-orange-600 font-bold text-[11px] uppercase tracking-[0.2em]">
+                   {isFallback ? 'Recommended Options' : 'Top Rankings'}
+                 </span>
               </div>
               <h2 className="font-comfortaa font-bold text-3xl lg:text-5xl text-navy-800 leading-tight">
-                Recommended {course.name} Colleges
+                {isFallback ? `Top ${course.name} Colleges in Karnataka` : `Best ${course.name} Colleges in ${cityName}`}
               </h2>
-              <p className="text-gray-500 mt-4 text-lg">Curated list of institutions in {cityName} with excellent academic and placement records.</p>
+              <p className="text-gray-500 mt-4 text-lg">
+                {isFallback 
+                  ? `We're verifying more ${course.name} colleges in ${cityName}. Meanwhile, consider these top-ranked institutions in the state.`
+                  : `Curated list of ${course.name} institutions in ${cityName} with excellent academic and placement records.`}
+              </p>
             </div>
           </div>
           
-          {listings.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-              {listings.map((l, i) => (
-                <ListingCard key={l.id} listing={l} index={i} />
-              ))}
-            </div>
-          ) : (
-            <div className="bg-white rounded-[2.5rem] p-20 text-center border border-gray-100 shadow-sm">
-              <GraduationCap className="w-16 h-16 text-gray-200 mx-auto mb-6" />
-              <h3 className="text-2xl font-bold text-navy-800 mb-2">No {course.name} colleges found</h3>
-              <p className="text-gray-500 max-w-md mx-auto">Try exploring other cities or check back soon as we add more colleges.</p>
-            </div>
-          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+            {listings.map((l, i) => (
+              <ListingCard key={l.id} listing={l} index={i} />
+            ))}
+          </div>
+          
+          <div className="mt-16 text-center">
+            <Link href={`/courses/${courseParam}`} className="inline-flex items-center gap-2 text-navy-600 font-bold hover:text-orange-600 transition-colors">
+              Explore All {course.name} Colleges <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Fees Table Section */}
-      {listings.length > 0 && (
-        <section className="py-24 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl lg:text-5xl font-bold text-navy-800 font-comfortaa mb-6">Fees & Ranking Table</h2>
-              <p className="text-gray-500 max-w-2xl mx-auto">Compare the annual fees and regional rankings for top {course.name} colleges in {cityName}.</p>
-            </div>
-            
-            <div className="overflow-x-auto rounded-[2rem] border border-gray-100 shadow-xl shadow-navy-900/5">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-navy-900 text-white">
-                    <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider">Institution</th>
-                    <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider">Location</th>
-                    <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider text-center">Annual Fees</th>
-                    <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider text-center">Rating/Rank</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {listings.map((l) => (
-                    <tr key={l.id} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="px-8 py-6">
-                        <Link href={`/colleges/${l.slug}`} className="font-bold text-navy-800 hover:text-orange-500 transition-colors">
-                          {l.shortTitle}
-                        </Link>
-                      </td>
-                      <td className="px-8 py-6 text-gray-500 text-sm flex items-center gap-2">
-                        <MapPin className="w-3.5 h-3.5 text-orange-500" /> {l.city}
-                      </td>
-                      <td className="px-8 py-6 text-center font-medium text-navy-700">
-                        {l.fees || 'Contact for Fees'}
-                      </td>
-                      <td className="px-8 py-6 text-center">
-                        <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold uppercase">
-                          {l.ranking || 'Top Rated'}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl lg:text-5xl font-bold text-navy-800 font-comfortaa mb-6">Fees & Ranking Table</h2>
+            <p className="text-gray-500 max-w-2xl mx-auto">Compare the annual fees and regional rankings for top {course.name} colleges.</p>
           </div>
-        </section>
-      )}
+          
+          <div className="overflow-x-auto rounded-[2rem] border border-gray-100 shadow-xl shadow-navy-900/5">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-navy-900 text-white">
+                  <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider">Institution</th>
+                  <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider">Location</th>
+                  <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider text-center">Annual Fees</th>
+                  <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider text-center">Rating/Rank</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {listings.slice(0, 10).map((l) => (
+                  <tr key={l.id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="px-8 py-6">
+                      <Link href={`/colleges/${l.slug}`} className="font-bold text-navy-800 hover:text-orange-500 transition-colors">
+                        {l.shortTitle}
+                      </Link>
+                    </td>
+                    <td className="px-8 py-6 text-gray-500 text-sm flex items-center gap-2">
+                      <MapPin className="w-3.5 h-3.5 text-orange-500" /> {l.city}
+                    </td>
+                    <td className="px-8 py-6 text-center font-medium text-navy-700">
+                      {l.fees || 'Contact for Fees'}
+                    </td>
+                    <td className="px-8 py-6 text-center">
+                      <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold uppercase">
+                        {l.ranking || 'Top Rated'}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
       {/* Why Study Section */}
       <section className="py-24 bg-gray-50">
@@ -321,7 +349,7 @@ export default async function TopCollegesPage({ params }: Props) {
               <HelpCircle className="w-8 h-8" />
             </div>
             <h2 className="text-3xl lg:text-5xl font-bold text-navy-800 font-comfortaa mb-6">FAQ: {course.name} in {cityName}</h2>
-            <p className="text-gray-500">Expert answers to common student questions.</p>
+            <p className="text-gray-500">Expert answers to common student questions about {course.name} admissions.</p>
           </div>
           
           <FAQAccordion faqs={faqs} />
@@ -337,7 +365,7 @@ export default async function TopCollegesPage({ params }: Props) {
               Get {course.name} Admission help in {cityName}
             </h2>
             <p className="text-navy-100/70 text-lg lg:text-xl mb-12">
-              Speak with our senior admission consultants to secure your seat today.
+              Speak with our senior admission consultants to secure your seat in a top institution today.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <a

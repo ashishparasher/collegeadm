@@ -30,3 +30,20 @@ export function extractHeadings(html: string) {
     return { id, text, level: parseInt(m[1]) };
   });
 }
+
+export const cityMap: Record<string, string[]> = {
+  bangalore: ["bangalore", "bengaluru"],
+  mysore: ["mysore", "mysuru"],
+  mangalore: ["mangalore", "mangaluru"],
+  hubli: ["hubli", "hubballi"],
+  belgaum: ["belgaum", "belagavi"],
+  kolar: ["kolar"],
+  belagavi: ["belgaum", "belagavi"],
+  bengaluru: ["bangalore", "bengaluru"],
+  mysuru: ["mysore", "mysuru"],
+  mangaluru: ["mangalore", "mangaluru"],
+};
+
+export function getCityVariants(citySlug: string): string[] {
+  return cityMap[citySlug.toLowerCase()] || [citySlug];
+}

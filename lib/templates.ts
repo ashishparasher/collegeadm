@@ -83,7 +83,7 @@ export function generateCitySEOTemplate(city: string, colleges: any[], courseNam
         <span>Valid scores in relevant entrance exams like NEET, JEE Main, KCET, COMEDK, or PGCET.</span>
       </li>
     </ul>
-    <p>For students who might have missed the entrance exam cutoffs, <strong>direct admission in ${cityName} colleges</strong> provides a valuable alternative to secure their future in a top-tier institution.</p>
+    <p>For students who might have missed the entrance exam cutoffs, <strong>direct admission in ${cityName}</strong> provides a valuable alternative to secure their future in a top-tier institution.</p>
   `;
 
   const whyStudy = `
@@ -91,18 +91,30 @@ export function generateCitySEOTemplate(city: string, colleges: any[], courseNam
     <p>${cityName} offers a unique blend of academic rigor and vibrant campus life. Here are the top reasons why students choose ${cityName} for their higher education:</p>
     <div class="grid md:grid-cols-2 gap-8 my-10">
       <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+        <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 mb-4">
+          <Sparkles class="w-5 h-5" />
+        </div>
         <h4 class="font-bold text-navy-800 mb-2">Industry Hub</h4>
         <p class="text-gray-600 text-sm">Proximity to major corporate offices and industrial zones provides excellent internship and placement opportunities.</p>
       </div>
       <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+        <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 mb-4">
+          <Building2 class="w-5 h-5" />
+        </div>
         <h4 class="font-bold text-navy-800 mb-2">Research Excellence</h4>
         <p class="text-gray-600 text-sm">Many colleges in ${cityName} are known for their research facilities and collaborations with international universities.</p>
       </div>
       <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+        <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600 mb-4">
+          <MapPin class="w-5 h-5" />
+        </div>
         <h4 class="font-bold text-navy-800 mb-2">Cultural Diversity</h4>
         <p class="text-gray-600 text-sm">The cosmopolitan nature of the city ensures a diverse student population and a rich multicultural experience.</p>
       </div>
       <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+        <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 mb-4">
+          <Info class="w-5 h-5" />
+        </div>
         <h4 class="font-bold text-navy-800 mb-2">Networking</h4>
         <p class="text-gray-600 text-sm">Studying in a major hub allows you to build a strong professional network that will last a lifetime.</p>
       </div>

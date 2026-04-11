@@ -5,10 +5,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
 import { ListingCard } from '@/components/directory/ListingCard';
-import { MapPin, ChevronRight, Building2, CheckCircle2, Phone, MessageSquare, Info, HelpCircle } from 'lucide-react';
+import { MapPin, ChevronRight, Building2, CheckCircle2, Phone, MessageSquare, Info, HelpCircle, Sparkles } from 'lucide-react';
 import { generateCitySEOTemplate } from '@/lib/templates';
 import { LeadForm } from '@/components/ui/LeadForm';
 import { FAQAccordion } from '@/components/ui/FAQAccordion';
+import { getCityVariants } from '@/lib/utils';
 
 interface Props {
   params: { "city-slug": string };
@@ -30,8 +31,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://collegeadm.org';
   
   return {
-    title: `Top Colleges in ${cityName} | Admission Guide 2026`,
-    description: `Explore the best colleges in ${cityName} with fees, rankings and admission details. Secure your direct admission under management quota seats today.`,
+    title: `Best Colleges in ${cityName} 2026 | Direct Admission Guide`,
+    description: `Explore the top colleges in ${cityName} with updated fees, rankings and admission details. Secure your direct admission under management quota seats today.`,
     alternates: {
       canonical: `${baseUrl}/${slug}`,
     },
@@ -45,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CityPage({ params }: Props) {
-  const year = new Date().getFullYear()
+  const year = new Date().getFullYear();
   const slug = params?.["city-slug"] || "";
   
   if (!slug.startsWith("colleges-in-")) {
@@ -54,12 +55,17 @@ export default async function CityPage({ params }: Props) {
   
   const cityParam = slug.replace("colleges-in-", "");
   const cityName = cityParam.charAt(0).toUpperCase() + cityParam.slice(1);
+  const cityVariants = getCityVariants(cityParam);
   
-  const dbListings = await prisma.college.findMany({
+  // Try to find colleges in specific city
+  let dbListings = await prisma.college.findMany({
     where: {
-      location: {
-        contains: cityParam
-      }
+      OR: cityVariants.map(variant => ({
+        location: {
+          contains: variant,
+          mode: 'insensitive'
+        }
+      }))
     },
     include: {
       courses: true
@@ -67,11 +73,28 @@ export default async function CityPage({ params }: Props) {
     orderBy: { createdAt: 'desc' }
   });
 
+  let isFallback = false;
+  // If no colleges found, fallback to statewide (Karnataka) featured colleges
+  if (dbListings.length === 0) {
+    isFallback = true;
+    dbListings = await prisma.college.findMany({
+      where: {
+        OR: [
+          { location: { contains: 'Karnataka', mode: 'insensitive' } },
+          { location: { contains: 'Bangalore', mode: 'insensitive' } }
+        ]
+      },
+      take: 6,
+      include: { courses: true },
+      orderBy: { createdAt: 'desc' }
+    });
+  }
+
   const listings = dbListings.map(l => ({
     ...l,
     shortTitle: l.name.split('|')[0].split('-')[0].trim(),
     city: l.location.split(',')[0].trim(),
-    courseType: 'Direct Admission',
+    courseType: 'Admission 2026',
     featured_image: l.featuredImage,
     excerpt: l.description.replace(/<[^>]+>/g, ' ').slice(0, 140) + '...',
     collegeType: 'Partner'
@@ -132,7 +155,7 @@ export default async function CityPage({ params }: Props) {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
                 </span>
-                <span className="text-white text-[11px] font-bold uppercase tracking-wider">Admission Guide 2026-27</span>
+                <span className="text-white text-[11px] font-bold uppercase tracking-wider">Admission Guide {year}-{year+1}</span>
               </div>
               
               <h1 className="font-comfortaa font-bold text-4xl lg:text-6xl text-white mb-6 leading-tight">
@@ -163,7 +186,7 @@ export default async function CityPage({ params }: Props) {
                 />
               </div>
               <div className="absolute -bottom-10 -left-10 w-64 p-8 rounded-[2rem] bg-orange-500 text-white shadow-2xl z-20 -rotate-3 animate-float">
-                <p className="text-4xl font-bold font-comfortaa mb-1">2026</p>
+                <p className="text-4xl font-bold font-comfortaa mb-1">{year}</p>
                 <p className="text-xs font-bold uppercase tracking-widest opacity-80">Admissions Open</p>
               </div>
             </div>
@@ -223,77 +246,79 @@ export default async function CityPage({ params }: Props) {
                  <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center">
                     <Building2 className="w-4 h-4 text-orange-600" />
                  </div>
-                 <span className="text-orange-600 font-bold text-[11px] uppercase tracking-[0.2em]">Partner Colleges</span>
+                 <span className="text-orange-600 font-bold text-[11px] uppercase tracking-[0.2em]">
+                   {isFallback ? 'Recommended Institutions' : 'Partner Colleges'}
+                 </span>
               </div>
               <h2 className="font-comfortaa font-bold text-3xl lg:text-5xl text-navy-800 leading-tight">
-                Best Colleges in {cityName}
+                {isFallback ? `Top Colleges in Karnataka` : `Best Colleges in ${cityName}`}
               </h2>
-              <p className="text-gray-500 mt-4 text-lg">Comparing features, infrastructure and placement records of top institutions.</p>
+              <p className="text-gray-500 mt-4 text-lg">
+                {isFallback 
+                  ? `While we update our ${cityName} list, explore these premier institutions in Karnataka.`
+                  : `Comparing features, infrastructure and placement records of top institutions in ${cityName}.`}
+              </p>
             </div>
           </div>
           
-          {listings.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-              {listings.map((l, i) => (
-                <ListingCard key={l.id} listing={l} index={i} />
-              ))}
-            </div>
-          ) : (
-            <div className="bg-white rounded-[2.5rem] p-20 text-center border border-gray-100 shadow-sm">
-              <Building2 className="w-16 h-16 text-gray-200 mx-auto mb-6" />
-              <h3 className="text-2xl font-bold text-navy-800 mb-2">No colleges listed yet</h3>
-              <p className="text-gray-500 max-w-md mx-auto">We are currently verifying more colleges in {cityName}. Check back soon!</p>
-            </div>
-          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+            {listings.map((l, i) => (
+              <ListingCard key={l.id} listing={l} index={i} />
+            ))}
+          </div>
+          
+          <div className="mt-16 text-center">
+            <Link href="/colleges" className="inline-flex items-center gap-2 text-navy-600 font-bold hover:text-orange-600 transition-colors">
+              View All Colleges in India <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Fees Table Section */}
-      {listings.length > 0 && (
-        <section className="py-24 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl lg:text-5xl font-bold text-navy-800 font-comfortaa mb-6">Fees & Ranking Comparison</h2>
-              <p className="text-gray-500 max-w-2xl mx-auto">Quick overview of the fee structure and regional rankings for major institutions in {cityName}.</p>
-            </div>
-            
-            <div className="overflow-x-auto rounded-[2rem] border border-gray-100 shadow-xl shadow-navy-900/5">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-navy-900 text-white">
-                    <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider">College Name</th>
-                    <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider">Location</th>
-                    <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider text-center">Fees (Annual)</th>
-                    <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider text-center">NIRF/Ranking</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {listings.map((l) => (
-                    <tr key={l.id} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="px-8 py-6">
-                        <Link href={`/colleges/${l.slug}`} className="font-bold text-navy-800 hover:text-orange-500 transition-colors">
-                          {l.shortTitle}
-                        </Link>
-                      </td>
-                      <td className="px-8 py-6 text-gray-500 text-sm flex items-center gap-2">
-                        <MapPin className="w-3.5 h-3.5 text-orange-500" /> {l.city}
-                      </td>
-                      <td className="px-8 py-6 text-center font-medium text-navy-700">
-                        {l.fees || 'Check Fees'}
-                      </td>
-                      <td className="px-8 py-6 text-center">
-                        <span className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-xs font-bold uppercase">
-                          {l.ranking || 'Top 50'}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl lg:text-5xl font-bold text-navy-800 font-comfortaa mb-6">Fees & Ranking Comparison</h2>
+            <p className="text-gray-500 max-w-2xl mx-auto">Quick overview of the fee structure and regional rankings for major institutions.</p>
           </div>
-        </section>
-      )}
+          
+          <div className="overflow-x-auto rounded-[2rem] border border-gray-100 shadow-xl shadow-navy-900/5">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-navy-900 text-white">
+                  <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider">College Name</th>
+                  <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider">Location</th>
+                  <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider text-center">Fees (Annual)</th>
+                  <th className="px-8 py-6 font-bold text-sm uppercase tracking-wider text-center">NIRF/Ranking</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {listings.slice(0, 8).map((l) => (
+                  <tr key={l.id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="px-8 py-6">
+                      <Link href={`/colleges/${l.slug}`} className="font-bold text-navy-800 hover:text-orange-500 transition-colors">
+                        {l.shortTitle}
+                      </Link>
+                    </td>
+                    <td className="px-8 py-6 text-gray-500 text-sm flex items-center gap-2">
+                      <MapPin className="w-3.5 h-3.5 text-orange-500" /> {l.city}
+                    </td>
+                    <td className="px-8 py-6 text-center font-medium text-navy-700">
+                      {l.fees || 'Check Fees'}
+                    </td>
+                    <td className="px-8 py-6 text-center">
+                      <span className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-xs font-bold uppercase">
+                        {l.ranking || 'Top 50'}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
       {/* Why Study Section */}
       <section className="py-24 bg-gray-50">
@@ -310,7 +335,7 @@ export default async function CityPage({ params }: Props) {
               <HelpCircle className="w-8 h-8" />
             </div>
             <h2 className="text-3xl lg:text-5xl font-bold text-navy-800 font-comfortaa mb-6">Frequently Asked Questions</h2>
-            <p className="text-gray-500">Find answers to the most common queries regarding {cityName} college admissions.</p>
+            <p className="text-gray-500">Find answers to the most common queries regarding college admissions in {cityName}.</p>
           </div>
           
           <FAQAccordion faqs={faqs} />
