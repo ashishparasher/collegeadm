@@ -1,6 +1,8 @@
 export const dynamic = "force-dynamic"
 export const runtime = "nodejs"
 
+console.log("Database URL:", process.env.DATABASE_URL)
+
 // app/api/leads/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';

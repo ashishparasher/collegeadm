@@ -15,12 +15,35 @@ export function ContactForm() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.MouseEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1200)); // Simulate API
-    setLoading(false);
-    setSubmitted(true);
+    try {
+      const res = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          message: form.message,
+          collegeInterest: form.course, // Map course to collegeInterest
+        }),
+      });
+
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        const errorData = await res.json();
+        console.error('Lead submission failed:', errorData);
+        alert('Failed to send enquiry. Please check your details and try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('An error occurred. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
@@ -42,7 +65,7 @@ export function ContactForm() {
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 lg:p-8">
       <h2 className="font-comfortaa font-bold text-navy-800 text-xl mb-6">Send an Enquiry</h2>
 
-      <div className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           {[
             { name: 'name', label: 'Full Name', type: 'text', placeholder: 'Your name', colSpan: 1 },
@@ -100,11 +123,11 @@ export function ContactForm() {
         </div>
 
         <button
-          onClick={handleSubmit}
-          disabled={loading || !form.name || !form.phone}
+          type="submit"
+          disabled={loading || !form.name || !form.phone || !form.email}
           className={cn(
             'w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-base text-white transition-all duration-200',
-            loading || !form.name || !form.phone
+            loading || !form.name || !form.phone || !form.email
               ? 'bg-gray-300 cursor-not-allowed'
               : 'bg-orange-500 hover:bg-orange-400 shadow-lg shadow-orange-500/30 hover:scale-[1.02]'
           )}
@@ -125,7 +148,7 @@ export function ContactForm() {
         <p className="text-xs text-gray-400 text-center">
           By submitting, you agree to be contacted by our counselling team.
         </p>
-      </div>
+      </form>
     </div>
   );
 }

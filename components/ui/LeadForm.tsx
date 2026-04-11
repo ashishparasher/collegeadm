@@ -37,21 +37,35 @@ export function LeadForm({ collegeId, collegeName }: { collegeId?: string; colle
 
   const onSubmit = async (data: LeadFormData) => {
     setLoading(true);
+    console.log('Submitting lead data:', data);
     try {
       const res = await fetch('/api/leads', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          message: data.message,
+          collegeInterest: data.collegeInterest,
+          collegeId: data.collegeId || undefined,
+        }),
       });
 
       if (res.ok) {
+        const result = await res.json();
+        console.log('Lead submitted successfully:', result);
         setSubmitted(true);
         reset();
       } else {
+        const errorData = await res.json();
+        console.error('Lead submission failed:', errorData);
         alert('Something went wrong. Please try again.');
       }
     } catch (error) {
-      console.error(error);
+      console.error('Error submitting form:', error);
       alert('Error submitting form');
     } finally {
       setLoading(false);
