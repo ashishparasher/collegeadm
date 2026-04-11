@@ -1,4 +1,4 @@
-import { Analytics } from "@vercel/analytics/react"
+import { Analytics } from '@vercel/analytics/next';
 
 import type { Metadata } from 'next';
 import { Inter, Comfortaa } from 'next/font/google';
@@ -35,6 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <LayoutWrapper>{children}</LayoutWrapper>
           <WhatsAppButton />
         </SessionProvider>
+        <Analytics />
       </body>
     </html>
   );
