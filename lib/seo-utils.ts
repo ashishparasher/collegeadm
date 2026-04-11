@@ -46,7 +46,7 @@ export function generateListingMetadata(listing: CollegeListing): Metadata {
       description,
       url,
       type: 'article',
-      ...(listing.featured_image ? { images: [{ url: listing.featured_image }] } : {}),
+      ...(listing.featured_image ? { images: [{ url: listing.featured_image.replace(/\.(jpg|jpeg|png)$/i, '.webp') }] } : {}),
     },
     alternates: { canonical: url },
   };
@@ -67,7 +67,7 @@ export function generatePostMetadata(post: BlogPost): Metadata {
       description,
       url,
       type: 'article',
-      ...(post.featured_image ? { images: [{ url: post.featured_image }] } : {}),
+      ...(post.featured_image ? { images: [{ url: post.featured_image.replace(/\.(jpg|jpeg|png)$/i, '.webp') }] } : {}),
     },
     alternates: { canonical: url },
   };

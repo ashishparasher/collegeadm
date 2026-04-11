@@ -4,7 +4,8 @@ export const runtime = "nodejs";
 
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import { Plus, Pencil, Trash2, MapPin, ExternalLink } from 'lucide-react';
+import Image from 'next/image';
+import { Plus, Pencil, Trash2, MapPin, ExternalLink, Building2 } from 'lucide-react';
 import { deleteCollege } from './actions';
 
 export default async function CollegesAdminPage() {
@@ -50,9 +51,15 @@ export default async function CollegesAdminPage() {
                 <tr key={college.id} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
+                      <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 relative">
                         {college.featuredImage ? (
-                          <img src={college.featuredImage} alt="" className="w-full h-full object-cover" />
+                          <Image 
+                            src={college.featuredImage.replace(/\.(jpg|jpeg|png)$/i, '.webp')} 
+                            alt="" 
+                            fill
+                            className="object-cover" 
+                            sizes="40px"
+                          />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-gray-400">
                             <Building2 className="w-5 h-5" />
@@ -109,5 +116,3 @@ export default async function CollegesAdminPage() {
     </div>
   );
 }
-
-import { Building2 } from 'lucide-react';

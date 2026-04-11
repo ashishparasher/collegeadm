@@ -13,7 +13,7 @@ interface ListingCardProps {
 }
 
 export function ListingCard({ listing, index = 0, variant = 'default' }: ListingCardProps) {
-  const imageSrc = listing.featured_image || '/images/placeholder-college.jpg';
+  const imageSrc = listing.featured_image?.replace(/\.(jpg|jpeg|png)$/i, '.webp') || '/images/placeholder-college.jpg';
 
   return (
     <motion.div
@@ -37,6 +37,7 @@ export function ListingCard({ listing, index = 0, variant = 'default' }: Listing
             src={imageSrc}
             alt={listing.shortTitle || listing.name}
             fill
+            loading="lazy"
             className="object-cover transition-transform duration-700 group-hover:scale-110"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />

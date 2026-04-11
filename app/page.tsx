@@ -1,11 +1,12 @@
 // app/page.tsx
+import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, CheckCircle2, TrendingUp, Users, Award, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, CheckCircle2, TrendingUp, Users, Award, ShieldCheck, Sparkles, Phone } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 import { ListingCard } from '@/components/directory/ListingCard';
 import { HeroSection } from '@/components/ui/HeroSection';
+import { StatsBar, CategoryGrid, BlogCard } from '@/components/ui/StatsBar';
 import { BlogCarousel } from '@/components/home/BlogCarousel';
-import { BlogCard, StatsBar, CategoryGrid } from '@/components/ui/StatsBar';
 
 export default async function HomePage() {
   const [featuredRaw, posts] = await Promise.all([
@@ -29,6 +30,16 @@ export default async function HomePage() {
     collegeType: 'Partner'
   }));
 
+  const optimizedPosts = posts.map(p => ({
+    ...p,
+    featuredImage: p.featuredImage,
+    date: p.createdAt.toISOString(),
+    seo: {
+      title: p.metaTitle || p.title,
+      description: p.metaDescription || ''
+    }
+  }));
+
   return (
     <>
       <HeroSection />
@@ -36,7 +47,7 @@ export default async function HomePage() {
       {/* Blog Slider */}
       <section className="bg-white pt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <BlogCarousel posts={posts} />
+          <BlogCarousel posts={optimizedPosts} />
         </div>
       </section>
 
@@ -49,9 +60,9 @@ export default async function HomePage() {
             <div className="max-w-2xl">
               <div className="flex items-center gap-2 mb-4">
                  <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center">
-                    <Sparkles className="w-4 h-4 text-orange-600" />
+                    <Sparkles className="w-4 h-4 text-orange-700" />
                  </div>
-                 <span className="text-orange-600 font-bold text-[11px] uppercase tracking-[0.2em]">Our Selection</span>
+                 <span className="text-orange-700 font-bold text-[11px] uppercase tracking-[0.2em]">Our Selection</span>
               </div>
               <h2 className="font-comfortaa font-bold text-3xl lg:text-5xl text-navy-800 leading-tight">
                 Featured Partner Institutions
@@ -104,7 +115,7 @@ export default async function HomePage() {
                       <CheckCircle2 className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-navy-800 text-base mb-1">{item.title}</h4>
+                      <h2 className="font-bold text-navy-800 text-base mb-1">{item.title}</h2>
                       <p className="text-gray-500 text-sm">{item.desc}</p>
                     </div>
                   </div>
@@ -121,7 +132,14 @@ export default async function HomePage() {
 
             <div className="relative">
                <div className="aspect-square rounded-[3rem] bg-gray-100 overflow-hidden shadow-2xl rotate-3 relative z-10">
-                  <img src="/images/colleges/SDM-Ayurvedic-College.jpeg" className="w-full h-full object-cover grayscale-[0.2] hover:grayscale-0 transition-all duration-700" alt="Counselling" />
+                  <Image 
+                    src="/images/colleges/SDM-Ayurvedic-College.webp" 
+                    fill
+                    priority
+                    className="object-cover grayscale-[0.2] hover:grayscale-0 transition-all duration-700" 
+                    alt="Counselling"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
                </div>
                <div className="absolute -bottom-10 -left-10 w-64 p-8 rounded-[2rem] bg-orange-500 text-white shadow-2xl z-20 -rotate-3 animate-float">
                   <p className="text-4xl font-bold font-comfortaa mb-1">99%</p>
@@ -144,17 +162,10 @@ export default async function HomePage() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
-            {posts.map((post: any, i) => (
+            {optimizedPosts.map((post: any, i) => (
               <BlogCard 
                 key={post.id} 
-                post={{
-                  ...post, 
-                  date: post.createdAt.toISOString(),
-                  seo: {
-                    title: post.metaTitle || post.title,
-                    description: post.metaDescription || ''
-                  }
-                }} 
+                post={post} 
                 index={i} 
               />
             ))}
@@ -182,10 +193,11 @@ export default async function HomePage() {
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <a
                 href="tel:+917707055155"
-                className="px-8 py-4 rounded-xl bg-orange-500 text-white font-bold text-lg shadow-2xl shadow-orange-500/30 hover:bg-orange-400 transition-all hover:scale-105"
+                className="px-10 py-5 rounded-2xl bg-orange-600 text-white font-bold text-lg shadow-2xl shadow-orange-600/30 hover:bg-orange-500 transition-all hover:scale-105"
                 >
-                📞 Call: +91 77070 55155
-                </a>              <Link
+                <Phone className="inline-block mr-2 w-5 h-5" /> Call: 77070 55155
+                </a>
+              <Link
                 href="/contact"
                 className="px-10 py-5 rounded-2xl bg-white/10 text-white font-bold text-lg border border-white/20 backdrop-blur-md hover:bg-white/20 transition-all"
               >

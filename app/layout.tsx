@@ -1,17 +1,14 @@
-import { Analytics } from "@vercel/analytics/react"
-
 import type { Metadata } from 'next';
 import { Inter, Comfortaa } from 'next/font/google';
 import './globals.css';
 import { rootMetadata } from '@/lib/seo-utils';
-import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
-import { FloatingCTA } from '@/components/ui/FloatingCTA';
-
 import { SessionProvider } from '@/components/providers/SessionProvider';
-
 import { LayoutWrapper } from '@/components/layout/LayoutWrapper';
-import { WhatsAppButton } from '@/components/ui/WhatsAppButton';
+import dynamic from 'next/dynamic';
+import { Analytics } from '@vercel/analytics/react';
+
+const WhatsAppButton = dynamic(() => import('@/components/ui/WhatsAppButton').then(mod => mod.WhatsAppButton), { ssr: false });
+const FloatingCTA = dynamic(() => import('@/components/ui/FloatingCTA').then(mod => mod.FloatingCTA), { ssr: false });
 
 const inter = Inter({
   subsets: ['latin'],
@@ -34,6 +31,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SessionProvider>
           <LayoutWrapper>{children}</LayoutWrapper>
           <WhatsAppButton />
+          <FloatingCTA />
+          <Analytics />
         </SessionProvider>
       </body>
     </html>

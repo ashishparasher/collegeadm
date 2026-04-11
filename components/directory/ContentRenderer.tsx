@@ -47,6 +47,9 @@ export function ContentRenderer({ html, className = '' }: ContentRendererProps) 
         const isExternal = src.startsWith('http');
         if (isExternal) return undefined; // Let normal img handle external if needed, or handle differently.
 
+        // Use .webp version if possible
+        src = src.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+
         return (
           <div className="relative w-full h-auto my-6 aspect-video overflow-hidden rounded-xl bg-gray-100">
             <Image

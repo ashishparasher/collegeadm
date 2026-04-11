@@ -1,6 +1,10 @@
 // app/admin/media/page.tsx
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 import fs from 'fs/promises';
 import path from 'path';
+import Image from 'next/image';
 import { ImageIcon, Trash2, ExternalLink, HardDrive } from 'lucide-react';
 
 export default async function MediaAdminPage() {
@@ -40,15 +44,18 @@ export default async function MediaAdminPage() {
           {files.map((file) => (
             <div key={file} className="group bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-all">
               <div className="aspect-square bg-gray-50 relative overflow-hidden">
-                <img 
+                <Image 
                   src={`/uploads/${file}`} 
-                  alt="" 
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                  alt={file}
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-500" 
+                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
                 />
                 <div className="absolute inset-0 bg-navy/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                   <a 
                     href={`/uploads/${file}`} 
                     target="_blank" 
+                    aria-label={`View ${file} in new tab`}
                     className="p-2 bg-white rounded-lg text-navy hover:text-orange-500 transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />

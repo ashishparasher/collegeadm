@@ -12,6 +12,7 @@ import {
   Globe
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
 import { formatDate, truncate, stripHtml } from '@/lib/utils';
@@ -20,7 +21,7 @@ import { formatDate, truncate, stripHtml } from '@/lib/utils';
 export function StatsBar() {
   const stats = [
     { label: 'Guided Students', value: '5,000+', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Partner Colleges', value: '20+', icon: Building2, color: 'text-orange-600', bg: 'bg-orange-50' },
+    { label: 'Partner Colleges', value: '20+', icon: Building2, color: 'text-orange-700', bg: 'bg-orange-50' },
     { label: 'Success Rate', value: '99%', icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50' },
     { label: 'Trust Factor', value: '100%', icon: ShieldCheck, color: 'text-purple-600', bg: 'bg-purple-50' },
   ];
@@ -95,6 +96,7 @@ export function CategoryGrid({ byCategory }: { byCategory?: any }) {
 // ─── BlogCard ─────────────────────────────────────────────────────────────────
 export function BlogCard({ post, index = 0 }: { post: any; index?: number }) {
   const excerpt = post.metaDescription || truncate(stripHtml(post.content), 120);
+  const imageSrc = post.featuredImage?.replace(/\.(jpg|jpeg|png)$/i, '.webp') || '/images/blog-placeholder.jpg';
 
   return (
     <motion.div
@@ -109,10 +111,12 @@ export function BlogCard({ post, index = 0 }: { post: any; index?: number }) {
         className="group flex flex-col bg-white rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-navy-900/10 hover:-translate-y-2 transition-all duration-500 overflow-hidden h-full"
       >
         <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
-          <img 
-            src={post.featuredImage || '/images/blog-placeholder.jpg'} 
+          <Image 
+            src={imageSrc} 
             alt={post.title}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            fill
+            className="object-cover transition-transform duration-700 group-hover:scale-110"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
           <div className="absolute top-4 left-4">
             <span className="glass px-3 py-1.5 rounded-xl text-[10px] font-bold text-white uppercase tracking-wider">

@@ -147,21 +147,36 @@ export function CollegeForm({ initialData, id }: CollegeFormProps) {
 
         <div className="space-y-2">
           <label className="text-sm font-semibold text-gray-700">Featured Image URL</label>
-          <div className="flex gap-4">
-            <div className="flex-1">
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="w-full md:w-64 aspect-video rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 overflow-hidden relative group flex-shrink-0">
+              {watch('featuredImage') ? (
+                <div className="relative w-full h-full">
+                  <img 
+                    src={watch('featuredImage')} 
+                    alt="Preview" 
+                    className="w-full h-full object-cover" 
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">Current Preview</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                  <ImageIcon className="w-8 h-8 mb-2" />
+                  <span className="text-xs">No image</span>
+                </div>
+              )}
+            </div>
+            <div className="flex-1 space-y-4">
               <input
                 {...register('featuredImage')}
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-navy outline-none transition-all"
                 placeholder="/images/colleges/my-college.jpg"
               />
+              <p className="text-xs text-gray-400">
+                Recommended: 1200x800px. The system will automatically serve the .webp version on the frontend.
+              </p>
             </div>
-            <button
-              type="button"
-              className="px-4 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors flex items-center gap-2"
-            >
-              <ImageIcon className="w-5 h-5" />
-              Upload
-            </button>
           </div>
         </div>
 

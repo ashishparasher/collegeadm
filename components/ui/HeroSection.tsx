@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, ChevronDown, Sparkles, ShieldCheck, Zap } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Search, ShieldCheck, Sparkles, Zap } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const SEARCH_SUGGESTIONS = [
   'MS Ramaiah Medical College',
@@ -23,10 +23,7 @@ const item = {
 
 export function HeroSection() {
   const [query, setQuery] = useState('');
-  const [mounted, setMounted] = useState(false);
   const router = useRouter();
-
-  useEffect(() => setMounted(true), []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,32 +31,14 @@ export function HeroSection() {
     else router.push('/colleges');
   };
 
-  if (!mounted) return <div className="min-h-[85vh] bg-navy" />;
-
   return (
     <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden pt-20">
       {/* Dynamic Background */}
       <div className="absolute inset-0 bg-navy z-0">
         <div className="absolute inset-0 gradient-hero opacity-90" />
         {/* Animated Orbs */}
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.2, 1],
-            x: [0, 50, 0],
-            y: [0, 30, 0] 
-          }}
-          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-20 -right-20 w-[500px] h-[500px] bg-blue-400/20 rounded-full blur-[120px]" 
-        />
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.3, 1],
-            x: [0, -40, 0],
-            y: [0, 60, 0] 
-          }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute -bottom-40 -left-20 w-[600px] h-[600px] bg-orange-500/10 rounded-full blur-[120px]" 
-        />
+        <div className="absolute -top-20 -right-20 w-[500px] h-[500px] bg-blue-400/10 rounded-full blur-[120px] animate-float" />
+        <div className="absolute -bottom-40 -left-20 w-[600px] h-[600px] bg-orange-500/5 rounded-full blur-[120px] animate-float" style={{ animationDelay: '-2s' }} />
         
         {/* Grid Overlay */}
         <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
@@ -82,11 +61,19 @@ export function HeroSection() {
           </motion.div>
 
           {/* Headline */}
-          <motion.h1 variants={item} className="font-comfortaa font-bold text-4xl sm:text-5xl lg:text-7xl text-white leading-[1.1] mb-8 text-balance">
+          <motion.h1 
+            initial={false}
+            animate={{ opacity: 1, y: 0 }}
+            className="font-comfortaa font-bold text-4xl sm:text-5xl lg:text-7xl text-white leading-[1.1] mb-8 text-balance"
+          >
             Your Future, <span className="text-orange-400 underline decoration-white/20 underline-offset-8">Simplified.</span>
           </motion.h1>
 
-          <motion.p variants={item} className="text-navy-100/80 text-lg lg:text-xl leading-relaxed mb-12 max-w-2xl mx-auto lg:mx-0 font-medium">
+          <motion.p 
+            initial={false}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-navy-100/80 text-lg lg:text-xl leading-relaxed mb-12 max-w-2xl mx-auto lg:mx-0 font-medium"
+          >
             Get direct admission in India's premier medical & engineering colleges. Expert guidance for management quota seats with 100% transparency.
           </motion.p>
 
@@ -95,7 +82,9 @@ export function HeroSection() {
             <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3 p-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] shadow-2xl shadow-navy-900/40">
               <div className="relative flex-1">
                 <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-300" />
+                <label htmlFor="hero-search" className="sr-only">Search colleges or courses</label>
                 <input
+                  id="hero-search"
                   type="search"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
@@ -105,6 +94,7 @@ export function HeroSection() {
               </div>
               <button
                 type="submit"
+                aria-label="Search colleges"
                 className="shine px-10 py-4 gradient-orange text-white font-bold rounded-[1.5rem] shadow-xl shadow-orange-600/30 hover:scale-[1.02] active:scale-95 transition-all duration-200 whitespace-nowrap"
               >
                 Find College
@@ -139,14 +129,14 @@ export function HeroSection() {
               <div className="w-12 h-12 rounded-2xl bg-orange-500/20 flex items-center justify-center text-orange-400 group-hover:scale-110 transition-transform">
                 <ShieldCheck className="w-6 h-6" />
               </div>
-              <h3 className="text-white font-bold text-sm">Verified Seats</h3>
+              <h2 className="text-white font-bold text-sm">Verified Seats</h2>
               <p className="text-white/50 text-[11px] leading-relaxed">Direct tie-ups with 50+ top-tier institutions across India.</p>
             </div>
             <div className="glass p-6 rounded-[2rem] space-y-3 hover:bg-white/15 transition-colors group">
               <div className="w-12 h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
                 <Sparkles className="w-6 h-6" />
               </div>
-              <h3 className="text-white font-bold text-sm">Expert Help</h3>
+              <h2 className="text-white font-bold text-sm">Expert Help</h2>
               <p className="text-white/50 text-[11px] leading-relaxed">Personalized counselling from industry veterans.</p>
             </div>
           </div>
@@ -155,7 +145,7 @@ export function HeroSection() {
               <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
                 <Zap className="w-6 h-6" />
               </div>
-              <h3 className="text-white font-bold text-sm">Fast Process</h3>
+              <h2 className="text-white font-bold text-sm">Fast Process</h2>
               <p className="text-white/50 text-[11px] leading-relaxed">End-to-end documentation support for instant admission.</p>
             </div>
             <div className="bg-gradient-orange p-8 rounded-[2.5rem] shadow-2xl shadow-orange-600/20 flex flex-col justify-end min-h-[200px] relative overflow-hidden">

@@ -6,6 +6,12 @@ const nextConfig = {
       { protocol: 'http', hostname: 'localhost' },
     ],
   },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
+  },
   async redirects() {
     return [
       { source: '/listings', destination: '/colleges', permanent: true },

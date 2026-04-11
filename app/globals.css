@@ -82,7 +82,7 @@
     background: radial-gradient(circle at top right, #0057c3, #004aad, #003d91);
   }
   .gradient-orange {
-    background: linear-gradient(135deg, #ff8f00 0%, #ff6f00 100%);
+    background: linear-gradient(135deg, #e65100 0%, #ff6f00 100%);
   }
   .text-balance {
     text-wrap: balance;

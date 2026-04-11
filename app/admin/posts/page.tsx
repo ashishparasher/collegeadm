@@ -4,6 +4,7 @@ export const runtime = "nodejs";
 
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Plus, Pencil, Trash2, Calendar, ExternalLink } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { deletePost } from './actions';
@@ -50,9 +51,15 @@ export default async function PostsAdminPage() {
                 <tr key={post.id} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
+                      <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 relative">
                         {post.featuredImage ? (
-                          <img src={post.featuredImage} alt="" className="w-full h-full object-cover" />
+                          <Image 
+                            src={post.featuredImage.replace(/\.(jpg|jpeg|png)$/i, '.webp')} 
+                            alt="" 
+                            fill
+                            className="object-cover"
+                            sizes="40px"
+                          />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-50">
                             <Calendar className="w-5 h-5" />
