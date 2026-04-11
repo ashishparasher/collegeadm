@@ -1,4 +1,7 @@
 // app/admin/page.tsx
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { Building2, FileText, Users, TrendingUp } from 'lucide-react';

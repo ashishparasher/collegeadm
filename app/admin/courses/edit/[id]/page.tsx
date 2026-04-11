@@ -1,4 +1,7 @@
 // app/admin/courses/edit/[id]/page.tsx
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import { CourseForm } from '@/components/admin/CourseForm';

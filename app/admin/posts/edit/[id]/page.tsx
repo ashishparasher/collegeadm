@@ -1,4 +1,7 @@
 // app/admin/posts/edit/[id]/page.tsx
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import { PostForm } from '@/components/admin/PostForm';

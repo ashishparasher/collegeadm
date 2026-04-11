@@ -1,4 +1,7 @@
 // app/admin/leads/page.tsx
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 import { prisma } from '@/lib/prisma';
 import { Mail, Phone, Calendar, Building2, Download } from 'lucide-react';
 import { formatDate } from '@/lib/utils';

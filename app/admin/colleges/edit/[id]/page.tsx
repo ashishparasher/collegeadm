@@ -1,4 +1,7 @@
 // app/admin/colleges/edit/[id]/page.tsx
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import { CollegeForm } from '@/components/admin/CollegeForm';

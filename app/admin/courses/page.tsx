@@ -1,4 +1,7 @@
 // app/admin/courses/page.tsx
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { Plus, Pencil, Trash2, GraduationCap } from 'lucide-react';
