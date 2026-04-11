@@ -40,12 +40,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CityPage({ params }: Props) {
-  const cityName = params?.city ? (params.city.charAt(0).toUpperCase() + params.city.slice(1)) : 'Unknown';
+  const year = new Date().getFullYear()
+  const cityParam = params?.city || '';
+  if (!cityParam) return notFound();
+  
+  const cityName = cityParam.charAt(0).toUpperCase() + cityParam.slice(1);
   
   const dbListings = await prisma.college.findMany({
     where: {
       location: {
-        contains: params?.city || ''
+        contains: cityParam
       }
     },
     include: {
@@ -300,7 +304,7 @@ export default async function CityPage({ params }: Props) {
             <p className="text-gray-500">Find answers to the most common queries regarding {cityName} college admissions.</p>
           </div>
           
-          <FAQAccordion items={faqs} />
+          <FAQAccordion faqs={faqs} />
         </div>
       </section>
 

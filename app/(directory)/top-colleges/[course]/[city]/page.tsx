@@ -54,17 +54,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function TopCollegesPage({ params }: Props) {
+  const year = new Date().getFullYear();
+  const cityParam = params?.city || '';
+  const courseParam = params?.course || '';
+  
+  if (!cityParam || !courseParam) return notFound();
+  
   const course = await prisma.course.findUnique({
-    where: { slug: params.course },
+    where: { slug: courseParam },
   });
-  const cityName = params.city.charAt(0).toUpperCase() + params.city.slice(1);
+  const cityName = cityParam.charAt(0).toUpperCase() + cityParam.slice(1);
 
   if (!course) notFound();
 
   const dbListings = await prisma.college.findMany({
     where: {
-      location: { contains: params.city },
-      courses: { some: { slug: params.course } }
+      location: { contains: cityParam },
+      courses: { some: { slug: courseParam } }
     },
     include: {
       courses: true
@@ -318,7 +324,7 @@ export default async function TopCollegesPage({ params }: Props) {
             <p className="text-gray-500">Expert answers to common student questions.</p>
           </div>
           
-          <FAQAccordion items={faqs} />
+          <FAQAccordion faqs={faqs} />
         </div>
       </section>
 

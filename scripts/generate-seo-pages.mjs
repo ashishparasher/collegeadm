@@ -3,13 +3,8 @@ import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 
 const cities = [
-  "delhi",
-  "bangalore",
-  "mumbai",
-  "pune",
-  "hyderabad",
-  "chennai",
-  "kolkata"
+  "karnataka",
+  "bangalore"
 ]
 
 const courses = [
@@ -17,7 +12,8 @@ const courses = [
   "mba",
   "bca",
   "bba",
-  "mbbs"
+  "mbbs",
+  "bpt" 
 ]
 
 async function generatePages() {
@@ -39,7 +35,6 @@ async function generatePages() {
           title,
           slug,
           content: `Guide to ${course} colleges in ${city}`,
-          published: true,
           metaTitle: title,
           metaDescription: description
         }

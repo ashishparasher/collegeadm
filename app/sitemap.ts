@@ -9,8 +9,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const [colleges, posts, courses, exams] = await Promise.all([
     prisma.college.findMany({ 
-      select: { slug: true, updatedAt: true, location: true },
-      include: { courses: { select: { slug: true } } }
+      select: { 
+        slug: true, 
+        updatedAt: true, 
+        location: true,
+        courses: { select: { slug: true } }
+      }
     }),
     prisma.post.findMany({ select: { slug: true, updatedAt: true } }),
     prisma.course.findMany({ select: { slug: true } }),
