@@ -1,79 +1,63 @@
-// app/admin/leads/page.tsx
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-import { prisma } from '@/lib/prisma';
-import { Mail, Phone, Calendar, Building2, Download } from 'lucide-react';
+import Link from 'next/link';
+import { getAllLeads } from '@/services/lead.service';
 import { formatDate } from '@/lib/utils';
+import { Mail, Phone, Calendar, Building2, Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default async function LeadsAdminPage() {
-  const leads = await prisma.lead.findMany({
-    orderBy: { createdAt: 'desc' },
-    include: { college: true },
-  });
+  const leads = await getAllLeads();
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 font-comfortaa">Student Enquiries</h1>
-          <p className="text-gray-500 mt-1">Manage and track admission leads from the website</p>
+          <h1 className="text-2xl font-bold text-foreground font-comfortaa">Student Enquiries</h1>
+          <p className="text-muted-foreground mt-1">Manage and track admission leads.</p>
         </div>
-        <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all shadow-sm">
-          <Download className="w-5 h-5" />
-          Export CSV
-        </button>
+        <Button asChild variant="outline">
+          <a href="/api/export/leads" download><Download className="w-4 h-4 mr-2" /> Export CSV</a>
+        </Button>
       </div>
 
-      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-        <table className="w-full text-left border-collapse">
+      <div className="bg-card rounded-4xl border border-border overflow-hidden">
+        <table className="w-full text-left">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-100">
-              <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Student</th>
-              <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Contact</th>
-              <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Interested In</th>
-              <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Date</th>
+            <tr className="bg-muted/50 border-b border-border">
+              <th className="px-6 py-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">Student</th>
+              <th className="px-6 py-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">Contact</th>
+              <th className="px-6 py-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">Interested In</th>
+              <th className="px-6 py-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">Date</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-border">
             {leads.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="px-6 py-12 text-center text-gray-400">
-                  No leads captured yet. They will appear here once students submit the enquiry form.
-                </td>
-              </tr>
+              <tr><td colSpan={4} className="px-6 py-12 text-center text-muted-foreground">No leads yet.</td></tr>
             ) : (
               leads.map((lead) => (
-                <tr key={lead.id} className="hover:bg-gray-50/50 transition-colors">
+                <tr key={lead.id} className="hover:bg-muted/30 transition-colors">
                   <td className="px-6 py-4">
-                    <div>
-                      <p className="font-bold text-gray-900">{lead.name}</p>
-                      {lead.message && <p className="text-xs text-gray-400 mt-1 line-clamp-1 italic">"{lead.message}"</p>}
+                    <p className="font-bold text-foreground">{lead.name}</p>
+                    {lead.message && <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1 italic">"{lead.message}"</p>}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="space-y-1 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1.5"><Mail className="w-3 h-3" /> {lead.email}</div>
+                      <div className="flex items-center gap-1.5"><Phone className="w-3 h-3" /> {lead.phone}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Mail className="w-3.5 h-3.5 text-navy-300" />
-                        {lead.email}
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Phone className="w-3.5 h-3.5 text-navy-300" />
-                        {lead.phone}
-                      </div>
-                    </div>
+                    <span className="flex items-center gap-1.5 text-sm font-medium text-accent">
+                      <Building2 className="w-3.5 h-3.5" />
+                      {(lead as any).college?.name?.split('|')[0]?.trim() || lead.collegeInterest || 'General Enquiry'}
+                    </span>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-2 text-sm font-medium text-orange-600">
-                      <Building2 className="w-4 h-4" />
-                      {lead.college?.name || lead.collegeInterest || 'General Enquiry'}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2 text-xs text-gray-400">
-                      <Calendar className="w-3.5 h-3.5" />
-                      {formatDate(lead.createdAt.toISOString())}
-                    </div>
+                    <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <Calendar className="w-3 h-3" /> {formatDate(lead.createdAt.toISOString())}
+                    </span>
                   </td>
                 </tr>
               ))

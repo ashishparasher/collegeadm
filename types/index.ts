@@ -1,72 +1,44 @@
 // types/index.ts
 
-export interface SEOData {
-  focus_keyword: string;
-  title: string;
-  description: string;
-}
-
-export interface Term {
-  term_id: number;
+export interface CollegeListing {
+  id: string;
   name: string;
   slug: string;
-  taxonomy: string;
-}
-
-export interface CollegeListing {
-  id: number;
-  title: string;
-  slug: string;
-  type: 'listivo_listing';
-  content: string;
-  excerpt: string;
-  date: string;
-  seo: SEOData;
-  featured_image: string | null;
-  terms: Term[];
+  location: string;
+  state: string | null;
+  description: string;
+  fees: string | null;
+  cutoff: string | null;
+  ranking: string | null;
+  featuredImage: string | null;
+  website: string | null;
+  createdAt: Date;
   // Derived
-  courseType?: string;   // from terms: BAMS | BPT | Medical Colleges | Engineering Colleges
-  collegeType?: string;  // Private | Government
-  city?: string;
-  shortTitle?: string;
+  shortTitle: string;
+  city: string;
+  excerpt: string;
 }
 
 export interface BlogPost {
-  id: number;
+  id: string;
   title: string;
   slug: string;
-  type: 'post';
   content: string;
-  excerpt: string;
+  featuredImage: string | null;
+  metaTitle: string | null;
+  metaDescription: string | null;
+  createdAt: Date;
   date: string;
-  seo: SEOData;
-  featured_image: string | null;
-  terms: Term[];
+  seo: { title: string; description: string };
 }
 
-export interface MenuItem {
-  title: string;
-  url: string;
-  menu_item_parent: string;
-  ID: number;
-}
-
-export interface SiteInfo {
+export interface Lead {
+  id: string;
   name: string;
-  description: string;
-  url: string;
-}
-
-export interface DesignTokens {
-  colors: { primary: string; secondary: string; accent: string };
-  fonts: { heading: string; body: string };
-}
-
-export interface MigrationBundle {
-  site_info: SiteInfo;
-  content: (CollegeListing | BlogPost | Record<string, unknown>)[];
-  taxonomies: unknown[];
-  menus: Record<string, MenuItem[]>;
-  media: unknown[];
-  design: DesignTokens;
+  phone: string;
+  email: string;
+  message: string | null;
+  collegeInterest: string | null;
+  collegeId: string | null;
+  createdAt: Date;
 }

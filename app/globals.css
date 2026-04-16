@@ -2,133 +2,167 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Design Tokens ─────────────────────────────────────────────────── */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 224 71% 4%;
-    --primary: 217 100% 34%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 33 100% 50%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
-    --accent: 125 41% 34%;
+    --background: 0 0% 99%;
+    --foreground: 240 10% 8%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 8%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 8%;
+    --primary: 250 40% 16%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 10% 8%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 46%;
+    --accent: 25 100% 50%;
     --accent-foreground: 0 0% 100%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 217 100% 34%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 250 40% 16%;
     --radius: 1rem;
-    --navy: #004aad;
-    --orange: #ff6f00;
-    --green: #2e7d32;
   }
+}
 
-  * {
-    @apply border-border;
-    box-sizing: border-box;
-  }
-
+/* ─── Base Resets ────────────────────────────────────────────────────── */
+@layer base {
+  * { @apply border-border; }
   html {
-    scroll-behavior: smooth;
+    @apply scroll-smooth;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-
   body {
-    @apply bg-[#fcfdfe] text-foreground;
-    font-family: var(--font-inter), 'Inter', sans-serif;
-    font-feature-settings: "cv11", "ss01";
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
   }
-
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-comfortaa), 'Comfortaa', cursive;
-    font-weight: 700;
-    letter-spacing: -0.03em;
+    @apply font-comfortaa font-bold tracking-tight text-balance;
   }
+  img { content-visibility: auto; }
+}
 
-  /* Prose reset for college content */
-  .college-prose {
-    @apply text-[15px] sm:text-base;
+/* ─── Prose (Content Rendering) ──────────────────────────────────── */
+@layer components {
+  .prose {
+    @apply text-foreground/80 leading-[1.85];
+    font-size: 1.0625rem;
   }
-  .college-prose h1 { @apply text-2xl sm:text-3xl font-bold text-navy-800 mt-10 mb-6; font-family: var(--font-comfortaa); }
-  .college-prose h2 { @apply text-xl sm:text-2xl font-bold text-navy-800 mt-10 mb-5 border-b border-gray-100 pb-2; font-family: var(--font-comfortaa); }
-  .college-prose h3 { @apply text-lg sm:text-xl font-semibold text-navy-700 mt-8 mb-4; font-family: var(--font-comfortaa); }
-  .college-prose p  { @apply text-gray-600 leading-[1.8] mb-6; }
-  .college-prose ul { @apply list-none pl-0 mb-8 space-y-3; }
-  .college-prose ul li { @apply relative pl-7 text-gray-600 leading-relaxed; }
-  .college-prose ul li::before { 
-    content: '✓'; 
-    @apply absolute left-0 text-emerald-500 font-bold;
+  .prose h1 { @apply text-3xl font-bold mt-12 mb-5 text-foreground; }
+  .prose h2 { @apply text-2xl font-bold mt-10 mb-4 text-foreground relative pl-5 before:absolute before:left-0 before:top-1 before:bottom-1 before:w-1 before:rounded-full before:bg-accent; }
+  .prose h3 { @apply text-xl font-semibold mt-8 mb-3 text-foreground; }
+  .prose p  { @apply mb-5 text-base leading-[1.85]; }
+  .prose ul { @apply list-none pl-0 mb-5 space-y-2; }
+  .prose ul li { @apply relative pl-6 before:content-[''] before:absolute before:left-0 before:top-[0.6em] before:w-2 before:h-2 before:rounded-full before:bg-accent/30; }
+  .prose ol { @apply list-decimal pl-6 mb-5 space-y-2; }
+  .prose li { @apply text-base leading-relaxed; }
+  .prose a  { @apply text-accent font-semibold underline decoration-accent/30 underline-offset-4 hover:decoration-accent transition-all duration-300; }
+  .prose blockquote {
+    @apply border-l-4 border-accent/20 pl-5 py-3 italic text-muted-foreground my-8 bg-accent/[0.03] rounded-r-2xl;
   }
-  .college-prose ol { @apply list-decimal pl-6 mb-8 space-y-3; }
-  .college-prose li { @apply text-gray-600 leading-relaxed; }
-  .college-prose strong { @apply font-bold text-gray-900; }
-  
-  .college-prose table { @apply w-full border-collapse rounded-2xl overflow-hidden mb-10 text-sm shadow-sm border border-gray-100; }
-  .college-prose table th { @apply bg-navy-700 text-white px-5 py-4 text-left font-bold tracking-wide uppercase text-[11px]; }
-  .college-prose table td { @apply border-b border-gray-100 px-5 py-4 text-gray-600 font-medium; }
-  .college-prose table tr:last-child td { @apply border-b-0; }
-  .college-prose table tr:nth-child(even) td { @apply bg-gray-50/50; }
-  
-  .college-prose a { @apply text-navy-600 font-bold decoration-orange-400 decoration-2 underline-offset-4 underline hover:text-orange-600 transition-colors; }
-  .college-prose blockquote { @apply border-l-4 border-orange-500 pl-6 py-4 bg-orange-50/50 rounded-r-2xl my-8 italic text-gray-700 font-medium leading-relaxed; }
-  
-  .college-prose img { @apply rounded-3xl shadow-xl my-10 border border-gray-100; }
+  .prose table { @apply w-full border-collapse my-8 text-sm rounded-2xl overflow-hidden; }
+  .prose th { @apply bg-primary/5 px-5 py-3.5 text-left font-bold text-foreground text-xs uppercase tracking-wider; }
+  .prose td { @apply px-5 py-3.5 border-b border-border; }
+  .prose tr:hover td { @apply bg-muted/50; }
+  .prose img { @apply rounded-3xl my-8 shadow-xl; }
+  .prose pre { @apply bg-primary/[0.03] rounded-2xl p-5 overflow-x-auto my-6 text-sm border border-border; }
+  .prose code { @apply bg-primary/[0.05] px-2 py-0.5 rounded-lg text-sm font-mono text-accent; }
+  .prose hr { @apply border-border my-10; }
+}
+
+/* ─── Animations ─────────────────────────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-14px); }
+}
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(2deg); }
+}
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-ring {
+  0% { transform: scale(0.9); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 @layer utilities {
-  .gradient-navy {
-    background: linear-gradient(135deg, #003d91 0%, #002357 100%);
+  .animate-float { animation: float 6s ease-in-out infinite; }
+  .animate-float-slow { animation: float-slow 8s ease-in-out infinite; }
+  .animate-gradient { 
+    background-size: 200% 200%;
+    animation: gradient-shift 8s ease infinite; 
   }
-  .gradient-hero {
-    background: radial-gradient(circle at top right, #0057c3, #004aad, #003d91);
-  }
-  .gradient-orange {
-    background: linear-gradient(135deg, #e65100 0%, #ff6f00 100%);
-  }
-  .text-balance {
-    text-wrap: balance;
-  }
+  .animate-fade-up { animation: fade-up 0.6s ease-out forwards; }
+  .animate-pulse-ring { animation: pulse-ring 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+  .animate-slide-in { animation: slide-in-right 0.5s ease-out forwards; }
+  .animate-marquee { animation: marquee 30s linear infinite; }
+}
+
+/* ─── Glass & Surface Effects ────────────────────────────────────── */
+@layer utilities {
   .glass {
-    @apply backdrop-blur-md bg-white/10 border border-white/20;
+    @apply bg-white/60 backdrop-blur-2xl border border-white/30;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.4);
   }
   .glass-dark {
-    @apply backdrop-blur-md bg-navy-900/40 border border-white/10;
+    @apply bg-black/20 backdrop-blur-2xl border border-white/10;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
-  .shine {
-    position: relative;
-    overflow: hidden;
+  .surface-raised {
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.04), 0 12px 48px rgba(0,0,0,0.03);
   }
-  .shine::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -75%;
-    width: 50%;
-    height: 200%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transform: skewX(-20deg);
-    transition: left 0.7s ease;
-  }
-  .shine:hover::after {
-    left: 125%;
+  .surface-elevated {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06), 0 24px 72px rgba(0,0,0,0.06);
   }
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
-}
-::-webkit-scrollbar-track {
-  @apply bg-gray-50;
-}
-::-webkit-scrollbar-thumb {
-  @apply bg-gray-200 rounded-full border-4 border-solid border-gray-50 hover:bg-gray-300 transition-colors;
+/* ─── Gradient Presets ────────────────────────────────────────────── */
+@layer utilities {
+  .gradient-hero {
+    background: linear-gradient(135deg, #0f0a2e 0%, #1a1145 30%, #251566 60%, #1a0f40 100%);
+  }
+  .gradient-warm {
+    background: linear-gradient(135deg, #ff6b00 0%, #ff8a3d 50%, #ffaa70 100%);
+  }
+  .gradient-mesh {
+    background: 
+      radial-gradient(ellipse at 20% 50%, rgba(255, 107, 0, 0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 40% 80%, rgba(236, 72, 153, 0.06) 0%, transparent 50%);
+  }
+  .gradient-subtle {
+    background: linear-gradient(180deg, hsl(var(--muted)) 0%, hsl(var(--background)) 100%);
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #ff6b00, #ff3d7f, #7c3aed);
+  }
 }
 
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
+/* ─── PageSpeed: Reduce Layout Shift ─────────────────────────────── */
+@layer utilities {
+  .aspect-card { aspect-ratio: 16/10; }
+  .contain-layout { contain: layout style; }
+  .contain-paint { contain: paint; }
 }

@@ -1,68 +1,62 @@
-export const dynamic = "force-dynamic"
-
-import { MetadataRoute } from 'next';
+import type { MetadataRoute } from 'next';
 import { prisma } from '@/lib/prisma';
-import { cities, courses, modifiers } from '@/lib/seoKeywords';
+
+const BASE = 'https://collegeadm.org';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://collegeadm.org';
+  const colleges = await prisma.college.findMany({ select: { slug: true, updatedAt: true } });
+  const posts = await prisma.post.findMany({ select: { slug: true, updatedAt: true } });
+  const courses = await prisma.course.findMany({ select: { slug: true } });
+  const exams = await prisma.exam.findMany({ select: { slug: true } });
 
-  // 1. Static & Data Driven Pages
-  const [dbColleges, posts] = await Promise.all([
-    prisma.college.findMany({ select: { slug: true, updatedAt: true } }),
-    prisma.post.findMany({ select: { slug: true, updatedAt: true } }),
-  ]);
-
-  const staticRoutes = ['', '/colleges', '/blog', '/compare', '/contact', '/faq', '/scholarships']
-    .map(route => ({ url: `${baseUrl}${route}`, lastModified: new Date() }));
-
-  const collegePages = dbColleges.map(c => ({
-    url: `${baseUrl}/colleges/${c.slug}`,
-    lastModified: c.updatedAt,
-  }));
-
-  const blogPages = posts.map(p => ({
-    url: `${baseUrl}/blog/${p.slug}`,
-    lastModified: p.updatedAt,
-  }));
-
-  // 2. Programmatic SEO Routes: [modifier]-[course]-colleges-in-[city]
-  const pSeoPages: any[] = [];
-  // For sitemap, we include a high-value subset to avoid exceeding limits
-  modifiers.forEach(modifier => {
-    courses.forEach(course => {
-      cities.slice(0, 8).forEach(city => {
-        pSeoPages.push({
-          url: `${baseUrl}/${modifier}-${course}-colleges-in-${city}`,
-          lastModified: new Date(),
-        });
-      });
-    });
-  });
-
-  // 3. Comparisons
-  const comparisonPages: any[] = [];
-  for (let i = 0; i < Math.min(dbColleges.length, 15); i++) {
-    for (let j = i + 1; j < Math.min(dbColleges.length, 16); j++) {
-      comparisonPages.push({
-        url: `${baseUrl}/compare/${dbColleges[i].slug}-vs-${dbColleges[j].slug}`,
-        lastModified: new Date(),
-      });
-    }
-  }
-
-  // 4. City catch-all legacy
-  const cityPages = cities.map(city => ({
-    url: `${baseUrl}/colleges-in-${city}`,
-    lastModified: new Date(),
-  }));
-
-  return [
-    ...staticRoutes,
-    ...collegePages,
-    ...blogPages,
-    ...pSeoPages,
-    ...comparisonPages,
-    ...cityPages
+  const staticPages: MetadataRoute.Sitemap = [
+    { url: BASE, lastModified: new Date(), changeFrequency: 'daily', priority: 1 },
+    { url: `${BASE}/colleges`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
+    { url: `${BASE}/courses`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${BASE}/exams`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${BASE}/rankings`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${BASE}/scholarships`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE}/compare`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE}/blog`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
+    { url: `${BASE}/contact`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${BASE}/faq`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
   ];
+
+  const collegePages: MetadataRoute.Sitemap = colleges.map((c) => ({
+    url: `${BASE}/college/${c.slug}`,
+    lastModified: c.updatedAt,
+    changeFrequency: 'weekly',
+    priority: 0.8,
+  }));
+
+  const postPages: MetadataRoute.Sitemap = posts.map((p) => ({
+    url: `${BASE}/blog/${p.slug}`,
+    lastModified: p.updatedAt,
+    changeFrequency: 'weekly',
+    priority: 0.7,
+  }));
+
+  const coursePages: MetadataRoute.Sitemap = courses.map((c) => ({
+    url: `${BASE}/courses/${c.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }));
+
+  const examPages: MetadataRoute.Sitemap = exams.map((e) => ({
+    url: `${BASE}/exams/${e.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }));
+
+  const cities = ['bangalore', 'mysore', 'mangalore', 'hubli', 'belgaum'];
+  const cityPages: MetadataRoute.Sitemap = cities.map((city) => ({
+    url: `${BASE}/colleges/${city}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly',
+    priority: 0.7,
+  }));
+
+  return [...staticPages, ...collegePages, ...postPages, ...coursePages, ...examPages, ...cityPages];
 }

@@ -1,31 +1,25 @@
 import Link from 'next/link';
-import { GraduationCap } from 'lucide-react';
+import { Home, ArrowLeft, GraduationCap } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen gradient-hero flex items-center justify-center px-4">
-      <div className="text-center max-w-lg">
-        <div className="w-20 h-20 rounded-3xl bg-white/10 flex items-center justify-center mx-auto mb-8">
-          <GraduationCap className="w-10 h-10 text-white" />
+    <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
+      <div className="absolute inset-0 gradient-mesh opacity-30" />
+      <div className="text-center max-w-md relative z-10">
+        <div className="w-20 h-20 rounded-3xl bg-accent/10 flex items-center justify-center mx-auto mb-6">
+          <GraduationCap className="w-10 h-10 text-accent" />
         </div>
-        <h1 className="font-comfortaa font-bold text-7xl text-white mb-4">404</h1>
-        <h2 className="font-comfortaa font-bold text-2xl text-white mb-4">Page not found</h2>
-        <p className="text-navy-200 text-base mb-8 leading-relaxed">
-          The page you're looking for doesn't exist. It may have been moved or the URL might be incorrect.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link
-            href="/"
-            className="px-7 py-3.5 rounded-xl bg-orange-500 text-white font-bold hover:bg-orange-400 transition-all shadow-lg"
-          >
-            Go Home
-          </Link>
-          <Link
-            href="/colleges"
-            className="px-7 py-3.5 rounded-xl bg-white/10 text-white font-semibold border border-white/20 hover:bg-white/20 transition-all"
-          >
-            Browse Colleges
-          </Link>
+        <p className="text-7xl font-bold font-comfortaa text-gradient bg-gradient-to-r from-accent to-rose-400 mb-4 inline-block">404</p>
+        <h1 className="text-2xl font-bold text-foreground mb-3 font-comfortaa">Page Not Found</h1>
+        <p className="text-muted-foreground mb-8">The page you're looking for doesn't exist or has been moved.</p>
+        <div className="flex gap-3 justify-center">
+          <Button asChild variant="accent" className="rounded-full">
+            <Link href="/"><Home className="w-4 h-4 mr-2" /> Go Home</Link>
+          </Button>
+          <Button asChild variant="outline" className="rounded-full">
+            <Link href="/colleges"><ArrowLeft className="w-4 h-4 mr-2" /> Browse Colleges</Link>
+          </Button>
         </div>
       </div>
     </div>

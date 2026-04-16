@@ -1,11 +1,8 @@
-export const dynamic = "force-dynamic"
-export const runtime = "nodejs"
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
-console.log("Database URL:", process.env.DATABASE_URL)
-
-// app/api/leads/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { createLead } from '@/services/lead.service';
 import { z } from 'zod';
 
 const LeadSchema = z.object({
@@ -21,11 +18,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const data = LeadSchema.parse(body);
-
-    const lead = await prisma.lead.create({
-      data,
-    });
-
+    const lead = await createLead(data);
     return NextResponse.json({ success: true, id: lead.id });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -34,12 +27,4 @@ export async function POST(req: NextRequest) {
     console.error('Lead error:', error);
     return NextResponse.json({ error: 'Failed to submit lead' }, { status: 500 });
   }
-}
-
-export async function GET() {
-  const leads = await prisma.lead.findMany({
-    orderBy: { createdAt: 'desc' },
-    include: { college: true },
-  });
-  return NextResponse.json(leads);
 }
